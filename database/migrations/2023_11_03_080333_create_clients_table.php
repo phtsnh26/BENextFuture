@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('email');
             $table->string('phone_number');
             $table->string('fullname');
+            $table->date('date_of_birth');
             $table->string('avatar')->nullable();
             $table->integer('status')->default(1);
             $table->integer('gender')->nullable();
