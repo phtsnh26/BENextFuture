@@ -7,22 +7,17 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    public function dataPost()
-    {
-        $data = Post::all();
-        return response()->json([
-            'data'  => $data,
-        ]);
-    }
+
     public function createPost(Request $request)
     {
+        $client = $request->user();
         $data = Post::create([
             'caption' => $request->caption,
             'images' => $request->images,
             'video' => $request->video,
             'is_view_like' => 1,
             'is_view_comment' => 1,
-            'id_client' => 1,
+            'id_client' => $client->id,
             'id_tag' => 2,
         ]);
         if ($data) {

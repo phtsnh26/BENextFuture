@@ -8,16 +8,21 @@ use App\Http\Controllers\StoriesController;
 use App\Http\Controllers\ImageController;
 
 
-Route::post('/sign-up', [ClientController::class, 'signUp']);
-Route::post('/sign-in', [ClientController::class, 'signIn']);
+Route::post('/sign-up', [ClientController::class, 'register']);
+Route::post('/sign-in', [ClientController::class, 'login']);
 
-// Route::get('/data', [ClientController::class, "getData"]);
-Route::get('/dataPost', [PostController::class, "dataPost"]);
-Route::post('/create-post', [PostController::class, "createPost"]);
 
-Route::post('/upload-file', [ImageController::class, 'upload']);
-Route::post('/upload-image', [ImageController::class, 'uploadImage']);
 
-Route::post('/story/create', [StoriesController::class, 'store']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::group(['prefix'=> '/story'], function () {
+        Route::get('/', [StoriesController::class, "getStory"]);
+        Route::post('/create', [StoriesController::class, 'store']);
+    });
 
+    Route::post('/create-post', [PostController::class, "createPost"]);
+    Route::get('/dataPost', [PostController::class, "dataPost"]);
+    
+    Route::post('/upload-file', [ImageController::class, 'upload']);
+    Route::post('/upload-image', [ImageController::class, 'uploadImage']);
+});
 
