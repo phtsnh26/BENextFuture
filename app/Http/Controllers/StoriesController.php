@@ -11,24 +11,14 @@ class StoriesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function getStory(Request $request)
     {
-        //
+        $client = $request->user();
+        return $client;
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
+        $client = $request->user();
         $imageData = $request->input('image');
         $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $imageData));
         $imageName = time() . '.png';
@@ -36,52 +26,19 @@ class StoriesController extends Controller
         $check = Stories::create([
             'image'             => $imageName,
             'status'            => $request->status,
-            'id_client'         => 1,
+            'id_client'         => $client->id,
         ]);
         if ($check) {
             return response()->json([
                 'message' => 'Upload Story successfully!',
                 'status' => 1,
             ]);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'có lỗi xảy ra.',
                 'status' => 0,
             ]);
-
         }
-
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Stories $stories)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Stories $stories)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Stories $stories)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Stories $stories)
-    {
-        //
-    }
 }
