@@ -14,14 +14,23 @@ Route::post('/sign-in', [ClientController::class, 'login']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
+
     Route::group(['prefix'=> '/story'], function () {
-        Route::get('/', [StoriesController::class, "getStory"]);
+        Route::get('/data', [StoriesController::class, "getStory"]);
+        Route::get('/data-all', [StoriesController::class, "getAllStory"]);
+        // Route::get('/create', [StoriesController::class, 'store']);
+
+
         Route::post('/create', [StoriesController::class, 'store']);
+    });
+
+    Route::group(['prefix' => '/profile'], function () {
+        Route::get('/data', [ClientController::class, "getProfile"]);
     });
 
     Route::post('/create-post', [PostController::class, "createPost"]);
     Route::get('/dataPost', [PostController::class, "dataPost"]);
-    
+
     Route::post('/upload-file', [ImageController::class, 'upload']);
     Route::post('/upload-image', [ImageController::class, 'uploadImage']);
 });
