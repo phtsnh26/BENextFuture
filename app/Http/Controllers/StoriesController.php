@@ -14,7 +14,24 @@ class StoriesController extends Controller
     public function getStory(Request $request)
     {
         $client = $request->user();
-        return $client;
+        $dataStory = Stories::leftjoin('clients', 'clients.id', 'stories.id_client')
+            ->select('stories.*', 'clients.fullname', 'clients.avatar')
+            ->limit(4)
+            ->orderBy('created_at', 'desc')
+            ->paginate(4, ['*'], 3);
+        return response()->json([
+            'dataStory'    => $dataStory,
+        ]);
+    }
+    public function getAllStory(Request $request)
+    {
+        $allStory = Stories::leftjoin('clients', 'clients.id', 'stories.id_client')
+            ->select('stories.*', 'clients.fullname', 'clients.avatar')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return response()->json([
+            'allStory'   => $allStory,
+        ]);
     }
     public function store(Request $request)
     {
@@ -40,5 +57,4 @@ class StoriesController extends Controller
             ]);
         }
     }
-
 }
