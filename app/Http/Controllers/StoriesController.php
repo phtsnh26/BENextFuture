@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Stories;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
@@ -25,10 +26,12 @@ class StoriesController extends Controller
     }
     public function getAllStory(Request $request)
     {
+        $now = Carbon::now();
         $allStory = Stories::leftjoin('clients', 'clients.id', 'stories.id_client')
-            ->select('stories.*', 'clients.fullname', 'clients.avatar')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        ->select('stories.*', 'clients.fullname', 'clients.avatar')
+        ->where('stories.created_at', '>=', $now->subDay()) // Lọc các stories trong 24 tiếng trở lại đây
+        ->orderBy('created_at', 'desc')
+        ->get();
         return response()->json([
             'allStory'   => $allStory,
         ]);
@@ -56,5 +59,13 @@ class StoriesController extends Controller
                 'status' => 0,
             ]);
         }
+    }
+
+
+    public function detailStory(Request $request, $id){
+        $data = Stories::find($id);
+        return response()->json([
+            'data'    => $data,
+        ]);
     }
 }
