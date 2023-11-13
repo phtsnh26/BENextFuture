@@ -18,7 +18,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix'=> '/story'], function () {
         Route::get('/data', [StoriesController::class, "getStory"]);
         Route::get('/data-all', [StoriesController::class, "getAllStory"]);
-        // Route::get('/create', [StoriesController::class, 'store']);
+        Route::get('/{id}', [StoriesController::class, 'detailStory']);
 
 
         Route::post('/create', [StoriesController::class, 'store']);
