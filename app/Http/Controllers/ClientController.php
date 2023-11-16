@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Follower;
+use App\Models\Friend;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -48,12 +50,12 @@ class ClientController extends Controller
 
     public function register(Request $request)
     {
-        if($request->gender == 0){
-            $avata = "avata_female.jpg";
+        if ($request->gender == 0) {
+            $avata = "avatar_female.jpg";
         } else if ($request->gender == 1) {
-            $avata = "avata_male.jpg";
-        }else{
-            $avata = "other.jpg";
+            $avata = "avatar_male.jpg";
+        } else {
+            $avata = "avatar_other.jpg";
         }
         $user = Client::create([
             'username' => $request->username,
@@ -86,11 +88,33 @@ class ClientController extends Controller
         ]);
     }
 
-    public function getProfile(Request $request){
+    public function getAllData(Request $request)
+    {
+        $client = $request->user();
+        $follow = Follower::join('clients', 'clients.id', 'followers.my_id')
+            ->where('id_follower', $client->id)
+            ->Where('followers.status', Follower::friend_request)
+            ->select('clients.*')
+            ->pluck('clients.id');
+        $follower = Follower::where('my_id', $client->id)
+            ->where('status', '!=', Follower::un_friend_request)
+            ->pluck('id_follower');
+        $friend = Friend::where('my_id', $client->id)
+            ->pluck('id_friend');
+        $data = Client::where('id', '!=', $client->id)
+            ->whereNotIn('id', $friend->toArray())
+            ->whereNotIn('id', $follower->toArray())
+            ->whereNotIn('id', $follow->toArray())
+            ->inRandomOrder()
+            ->get();
+        return response()->json([
+            'data' => $data,
+        ]);
+    }
+    public function getProfile(Request $request)
+    {
         return response()->json([
             'myData'    => $request->user(),
         ]);
     }
-
-
 }
