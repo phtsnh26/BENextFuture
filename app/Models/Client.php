@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+
 class Client extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -26,7 +27,7 @@ class Client extends Authenticatable
 
     const male = 1;
     const female = 0;
-    const order = -1;
+    const other = -1;
     const account = 1;
     const lock_account = -1;
 }
