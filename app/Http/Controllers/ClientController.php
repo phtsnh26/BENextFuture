@@ -80,6 +80,17 @@ class ClientController extends Controller
         }
     }
 
+    public function signOut(Request $request)
+    {
+        $client = $request->user();
+
+        if ($client) {
+            $client->currentAccessToken()->delete();
+            return response()->json(['status' => 1]);
+        } else {
+            return response()->json(['status' => 0]);
+        }
+    }
     public function getData()
     {
         $data = Client::all();

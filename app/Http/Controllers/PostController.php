@@ -4,27 +4,48 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
 
-    public function createPost(Request $request)
+    public function create(Request $request)
     {
-        $client = $request->user();
-        $data = Post::create([
-            'caption' => $request->caption,
-            'images' => $request->images,
-            'video' => $request->video,
-            'is_view_like' => 1,
-            'is_view_comment' => 1,
-            'id_client' => $client->id,
-            'id_tag' => 2,
-        ]);
-        if ($data) {
+        $client = $request->user('');
+
+        if ($request->hasFile('images') && count($request->images) > 0 ) {
+            $images = $request->file('images');
+            $fileNames = [];
+            foreach ($images as $image) {
+                if ($image->isValid()) {
+                    $file_name = $image->getClientOriginalName();
+                    $image->move(public_path('img/post'), time() . "_" . $file_name);
+                    $fileNames[] = time() . "_" . $file_name;
+                }
+            }
+            $request->merge(['img' => $fileNames]);
+            $result = implode(',', $request->img);
+            $arr = $request->except('images'); // Loại bỏ key 'images' nếu nó tồn tại trong request
+            $arr['images'] = $result; // Thêm key 'images' với giá trị từ $result
+        }else{
+            $arr = $request->all(); // Loại bỏ key 'images' nếu nó tồn tại trong request
+        }
+        $arr['id_client'] = $client->id;
+        $post = Post::create($arr);
+        if($post){
             return response()->json([
                 'status'    => 1,
-                'message'   => 'Post successfully !',
+                'message'   => 'Posted successfully!',
+            ]);
+        }else{
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Posting error!',
             ]);
         }
+
+
+
     }
 }

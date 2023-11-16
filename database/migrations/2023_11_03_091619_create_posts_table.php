@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->text('caption');
+            $table->text('caption')->nullable();
             $table->text('images')->nullable();
-            $table->text('video')->nullable();
             $table->integer('react')->default(0);
             $table->integer('is_view_like')->default(1);
             $table->integer('is_view_comment')->default(1);
