@@ -48,11 +48,11 @@ class ClientController extends Controller
 
     public function register(Request $request)
     {
-        if($request->gender == 0){
+        if ($request->gender == 0) {
             $avata = "avata_female.jpg";
         } else if ($request->gender == 1) {
             $avata = "avata_male.jpg";
-        }else{
+        } else {
             $avata = "other.jpg";
         }
         $user = Client::create([
@@ -78,6 +78,17 @@ class ClientController extends Controller
         }
     }
 
+    public function signOut(Request $request)
+    {
+        $client = $request->user();
+
+        if ($client) {
+            $client->currentAccessToken()->delete();
+            return response()->json(['status' => 1]);
+        } else {
+            return response()->json(['status' => 0]);
+        }
+    }
     public function getData()
     {
         $data = Client::all();
@@ -86,11 +97,10 @@ class ClientController extends Controller
         ]);
     }
 
-    public function getProfile(Request $request){
+    public function getProfile(Request $request)
+    {
         return response()->json([
             'myData'    => $request->user(),
         ]);
     }
-
-
 }

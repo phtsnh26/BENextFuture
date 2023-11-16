@@ -12,7 +12,6 @@ class Post extends Model
     protected $fillable = [
         'caption',
         'images',
-        'video',
         'react',
         'is_view_like',
         'is_view_comment',
