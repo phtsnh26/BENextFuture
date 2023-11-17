@@ -33,9 +33,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/delete-friend', [FollowerController::class, "deleteFriend"]);
     });
 
+    Route::group(['prefix' => '/{username}'], function () {
+        Route::get('/data-info', [ClientController::class, "getInfo"]);
+    });
     Route::group(['prefix' => '/profile'], function () {
         Route::get('/data', [ClientController::class, "getProfile"]);
     });
+
     Route::get('/dataFull', [ClientController::class, "getAllData"]);
     Route::get('/data-all-friend', [FriendController::class, "getAllFriend"]);
 

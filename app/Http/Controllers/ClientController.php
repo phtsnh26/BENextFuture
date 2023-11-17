@@ -125,7 +125,16 @@ class ClientController extends Controller
     public function getProfile(Request $request)
     {
         return response()->json([
-            'myData'    => $request->user(),
+            'myInfo'    => $request->user(),
         ]);
+    }
+    public function getInfo(Request $request, $username)
+    {
+        $info = Client::where('username', $username)->first();
+        if ($info) {
+            return response()->json([
+                'info' => $info,
+            ]);
+        }
     }
 }
