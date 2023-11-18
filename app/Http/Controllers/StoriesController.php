@@ -14,8 +14,10 @@ class StoriesController extends Controller
      */
     public function getStory(Request $request)
     {
+        $now = Carbon::now();
         $client = $request->user();
         $dataStory = Stories::leftjoin('clients', 'clients.id', 'stories.id_client')
+            ->where('stories.created_at', '>=', $now->subDay()) // Lọc các stories trong 24 tiếng trở lại đây
             ->select('stories.*', 'clients.fullname', 'clients.avatar')
             ->limit(4)
             ->orderBy('created_at', 'desc')

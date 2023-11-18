@@ -14,7 +14,7 @@ class PostController extends Controller
     {
         $client = $request->user('');
 
-        if ($request->hasFile('images') && count($request->images) > 0 ) {
+        if ($request->hasFile('images') && count($request->images) > 0) {
             $images = $request->file('images');
             $fileNames = [];
             foreach ($images as $image) {
@@ -28,24 +28,34 @@ class PostController extends Controller
             $result = implode(',', $request->img);
             $arr = $request->except('images'); // Loại bỏ key 'images' nếu nó tồn tại trong request
             $arr['images'] = $result; // Thêm key 'images' với giá trị từ $result
-        }else{
+        } else {
             $arr = $request->all(); // Loại bỏ key 'images' nếu nó tồn tại trong request
         }
         $arr['id_client'] = $client->id;
         $post = Post::create($arr);
-        if($post){
+        if ($post) {
             return response()->json([
                 'status'    => 1,
                 'message'   => 'Posted successfully!',
             ]);
-        }else{
+        } else {
             return response()->json([
                 'status'    => 0,
                 'message'   => 'Posting error!',
             ]);
         }
-
-
-
+    }
+    public function dataPost(Request $request)
+    {
+        $client = $request->user();
+        $post = Post::join('clients', 'clients.id', 'posts.id_client')
+            ->select('posts.*', 'clients.username', 'clients.fullname', 'clients.avatar')
+            ->orderBy('posts.created_at', 'desc')
+            ->get();
+        return response()->json([
+            'status' => 1,
+            'dataPost'    => $post,
+            'message'    => 'oke',
+        ]);
     }
 }
