@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stories', function (Blueprint $table) {
+        Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->string('image');
-            $table->integer('time')->default(10);
-            $table->integer('viewer')->default(0);
-            $table->integer('privacy')->default(1);
+            $table->string('content');
+            $table->integer('interact')->default(0);
+            $table->string('id_tag')->nullable();
             $table->integer('id_client');
+            $table->integer('id_replier')->nullable();
+            $table->integer('id_post');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stories');
+        Schema::dropIfExists('comments');
     }
 };

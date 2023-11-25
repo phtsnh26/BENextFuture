@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Follower;
+use App\Models\Friend;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,7 +24,7 @@ class PostController extends Controller
                 if ($image->isValid()) {
                     $file_name = $image->getClientOriginalName();
                     $image->move(public_path('img/post'), time() . "_" . $file_name);
-                    $fileNames[] = time() . "_" . $file_name;
+                    $fileNames[] = 'post/'. time() . "_" . $file_name;
                 }
             }
             $request->merge(['img' => $fileNames]);
@@ -48,9 +51,50 @@ class PostController extends Controller
     public function dataPost(Request $request)
     {
         $client = $request->user();
-        $post = Post::join('clients', 'clients.id', 'posts.id_client')
+        $id_client = $client->id;
+        $friends = Friend::where('my_id', $client->id)
+            ->select('id_friend as result_id')
+            ->union(
+                Friend::where('id_friend', $client->id)
+                    ->select("my_id as result_id")
+            )
+            ->pluck('result_id');
+        $followers = Follower::where('my_id', $client->id)
+            ->select('id_follower')->pluck('id_follower');
+
+        // $post = DB::table('posts')
+        // ->join('clients', 'clients.id', '=', 'posts.id_client')
+        // ->select('posts.*', 'clients.username', 'clients.fullname', 'clients.avatar')
+        // ->where(function ($query) use ($friends, $id_client) {
+        //     $query->where('posts.privacy', '=', 'friend')
+        //     ->where(function ($query) use ($friends, $id_client) {
+        //         $query->whereIn('posts.id_client', $friends)
+        //         ->orWhere('posts.id_client', $id_client);
+        //     });
+        // })
+        // ->orWhere('posts.privacy', '=', 'public')
+        // ->orderBy('posts.created_at', 'desc')
+        // ->get();
+        $post = Post::join('clients', 'clients.id', '=', 'posts.id_client')
             ->select('posts.*', 'clients.username', 'clients.fullname', 'clients.avatar')
-            ->orderBy('posts.created_at', 'desc')
+            ->where(function ($query) use ($friends, $id_client) {
+                $query->where('posts.privacy', Post::friend)
+                    ->whereIn('posts.id_client', $friends)
+                    ->orWhere('posts.id_client', $id_client);
+            })
+            ->orWhere(function ($query) use ($id_client, $friends, $followers) {
+                $query->where('posts.privacy', Post::public)
+                    ->where(function ($query) use ($id_client, $friends, $followers) {
+                        $query->whereIn('posts.id_client', $friends)
+                            ->orWhereIn('posts.id_client', $followers)
+                            ->orWhere('posts.id_client', $id_client);
+                    });
+            })
+            ->orWhere(function ($query) use ($id_client) {
+                $query->where('posts.privacy', Post::private)
+                    ->where('posts.id_client', $id_client);
+            })
+            ->orderByDESC('posts.created_at')
             ->get();
         return response()->json([
             'status' => 1,

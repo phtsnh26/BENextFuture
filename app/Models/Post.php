@@ -17,5 +17,9 @@ class Post extends Model
         'is_view_comment',
         'id_client',
         'id_tag',
+        'privacy'
     ];
+    const public = 1;
+    const friend = 2;
+    const private = 4;
 }

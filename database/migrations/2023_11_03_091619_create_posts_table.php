@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('react')->default(0);
             $table->integer('is_view_like')->default(1);
             $table->integer('is_view_comment')->default(1);
+            $table->integer('privacy');
             $table->integer('id_client');
             $table->integer('id_tag')->nullable();
             $table->timestamps();
