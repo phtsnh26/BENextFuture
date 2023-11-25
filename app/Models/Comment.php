@@ -5,20 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Stories extends Model
+class Comment extends Model
 {
     use HasFactory;
-    protected $table = 'stories';
+    protected $table = 'comments';
     protected $fillable = [
-        'image',
-        'time',
-        'viewer',
-        'privacy',
+        'content',
+        'interact',
+        'id_tag',
         'id_client',
+        'id_replier',
+        'id_post',
     ];
-
-    const public = 1;
-    const friend = 2;
-    const private = 4;
-
 }

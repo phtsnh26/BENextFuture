@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FollowerController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\PostController;
@@ -18,6 +19,7 @@ Route::post('/sign-in', [ClientController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/sign-out', [ClientController::class, 'signOut']);
+
     Route::group(['prefix' => '/story'], function () {
         Route::get('/data', [StoriesController::class, "getStory"]);
         Route::get('/data-all', [StoriesController::class, "getAllStory"]);
@@ -49,6 +51,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => '/post'], function () {
         Route::post('/create', [PostController::class, "create"]);
         Route::get('/data', [PostController::class, "dataPost"]);
+    });
+
+    Route::group(['prefix' => '/comment'], function () {
+        Route::get('/data', [CommentController::class, 'data']);
+        Route::post('/create', [CommentController::class, 'store']);
     });
 
 
