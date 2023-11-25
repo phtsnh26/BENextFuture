@@ -178,7 +178,12 @@ class ClientController extends Controller
             ->pluck('result_id');
 
         if ($info) {
-            if ($friend->contains($info->id)) {
+            if ($info->id === $client->id) {
+                return response()->json([
+                    'status' => 'self',
+                    'info' => $info,
+                ]);
+            } else if ($friend->contains($info->id)) {
                 return response()->json([
                     'status'    => 'friend',
                     'info'   => $info,

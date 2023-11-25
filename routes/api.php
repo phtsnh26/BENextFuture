@@ -43,6 +43,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/dataFull', [ClientController::class, "getAllData"]);
     Route::get('/data-all-friend', [FriendController::class, "getAllFriend"]);
+    Route::post('/delete-friend', [FriendController::class, "delFriend"]);
+
 
     Route::group(['prefix' => '/post'], function () {
         Route::post('/create', [PostController::class, "create"]);
