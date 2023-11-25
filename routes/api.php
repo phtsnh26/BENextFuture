@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/cancel-friend', [FollowerController::class, "cancelFriend"]);
 
         Route::get('/request-friend', [FollowerController::class, "requestFriend"]);
+        Route::post('/request-friend-limit', [FollowerController::class, "requestFriendLimit"]);
         Route::post('/accept-friend', [FollowerController::class, "acceptFriend"]);
         Route::post('/delete-friend', [FollowerController::class, "deleteFriend"]);
     });
@@ -44,6 +45,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/dataFull', [ClientController::class, "getAllData"]);
     Route::get('/data-all-friend', [FriendController::class, "getAllFriend"]);
+    Route::post('/delete-friend', [FriendController::class, "delFriend"]);
+
 
     Route::group(['prefix' => '/post'], function () {
         Route::post('/create', [PostController::class, "create"]);

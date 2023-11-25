@@ -5,22 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Models\Friend;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FriendController extends Controller
 {
     public function getAllFriend(Request $request)
     {
         $client = $request->user();
-        //SELECT clients.* FROM `friends`
-        // join clients on clients.id = friends.id_friend
-        // where my_id = 5
-        $all_friend = Friend::where('my_id', $client->id)
-            ->select('id_friend as result_id')
-            ->union(
-                Friend::where('id_friend', $client->id)
-                    ->select("my_id as result_id")
-            )->get();
-
         $id_friends = Friend::where('my_id', $client->id)
         ->select('id_friend as result_id')
         ->union(
@@ -42,6 +33,32 @@ class FriendController extends Controller
         } else {
             return response()->json([
                 'status'    => 0,
+            ]);
+        }
+    }
+    public function delFriend(Request $request)
+    {
+        $client = $request->user();
+        $friend = Friend::where(function ($query) use ($client, $request) {
+            $query->where('my_id', $client->id)
+                ->where('id_friend', $request->id);
+        })
+            ->orWhere(function ($query) use ($client, $request) {
+                $query->where('my_id', $request->id)
+                    ->where('id_friend', $client->id);
+            })
+            ->first();
+
+        if ($friend) {
+            $friend->delete();
+            return response()->json([
+                'status'  => 1,
+                'message' => 'Delete friend successfully',
+            ]);
+        } else {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Friend not found or could not be deleted',
             ]);
         }
     }

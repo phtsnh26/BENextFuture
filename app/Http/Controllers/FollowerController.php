@@ -67,6 +67,40 @@ class FollowerController extends Controller
             ->where('id_follower', $client->id)
             ->Where('followers.status', Follower::friend_request)
             ->select('clients.*')
+            ->limit(10)
+            ->get();
+        if ($follower) {
+            return response()->json([
+                'status' => 1,
+                'data'  => $follower,
+            ]);
+        } else {
+            return response()->json([
+                'status'    => 0,
+            ]);
+        }
+    }
+    public function requestFriendLimit(Request $request)
+    {
+        $client = $request->user();
+        // select clients.* from followers join clients on clients.id = followers.my_id
+        // where followers.status = 0 and followers.id_follower = 9
+        $count = Follower::join('clients', 'clients.id', 'followers.my_id')
+            ->where('id_follower', $client->id)
+            ->Where('followers.status', Follower::friend_request)
+            ->select('clients.*')
+            ->get();
+        $total = $request->limit;
+        if ($count->count() > 10) {
+            $total += 10;
+        }
+        // select clients.* from followers join clients on clients.id = followers.my_id
+        // where followers.status = 0 and followers.id_follower = 9
+        $follower = Follower::join('clients', 'clients.id', 'followers.my_id')
+            ->where('id_follower', $client->id)
+            ->Where('followers.status', Follower::friend_request)
+            ->select('clients.*')
+            ->limit($total)
             ->get();
         if ($follower) {
             return response()->json([
