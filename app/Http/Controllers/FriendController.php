@@ -54,4 +54,30 @@ class FriendController extends Controller
             ]);
         }
     }
+    public function delFriend(Request $request)
+    {
+        $client = $request->user();
+        $friend = Friend::where(function ($query) use ($client, $request) {
+            $query->where('my_id', $client->id)
+                ->where('id_friend', $request->id);
+        })
+            ->orWhere(function ($query) use ($client, $request) {
+                $query->where('my_id', $request->id)
+                    ->where('id_friend', $client->id);
+            })
+            ->first();
+
+        if ($friend) {
+            $friend->delete();
+            return response()->json([
+                'status'  => 1,
+                'message' => 'Delete friend successfully',
+            ]);
+        } else {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Friend not found or could not be deleted',
+            ]);
+        }
+    }
 }
