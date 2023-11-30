@@ -15,4 +15,8 @@ class Group extends Model
         'privacy',
         'display',
     ];
+    const public = 1;
+    const private = -1;
+    const display_group = 2;
+    const hidden_group = -2;
 }
