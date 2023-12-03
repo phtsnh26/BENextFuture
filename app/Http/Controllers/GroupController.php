@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Connection;
+use App\Models\Friend;
 use App\Models\Group;
 use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GroupController extends Controller
 {
@@ -25,7 +27,15 @@ class GroupController extends Controller
         $your_group = Group::join('connections', 'connections.id_group', 'groups.id')
             ->where('id_client', $client->id)
             ->where('id_role', Role::admin)
+            ->select('groups.*')
             ->get();
+        foreach ($your_group as $key => $value) {
+            $getMember = Connection::where('id_group', $value->id)
+                ->groupBy('id_group')
+                ->select(DB::raw('count(*) as member'))
+                ->first(); // Sử dụng first() để lấy một dòng duy nhất từ câu truy vấn
+            $your_group[$key]->member = $getMember->member;
+        }
         return response()->json([
             'data' => $your_group,
         ]);
@@ -38,7 +48,15 @@ class GroupController extends Controller
         $client = $request->user();
         $group_participated = Group::join('connections', 'connections.id_group', 'groups.id')
             ->where('id_client', $client->id)
+            ->select('groups.*')
             ->get();
+        foreach ($group_participated as $key => $value) {
+            $getMember = Connection::where('id_group', $value->id)
+                ->groupBy('id_group')
+                ->select(DB::raw('count(*) as member'))
+                ->first(); // Sử dụng first() để lấy một dòng duy nhất từ câu truy vấn
+            $group_participated[$key]->member = $getMember->member;
+        }
         return response()->json([
             'data' => $group_participated,
         ]);
@@ -46,29 +64,72 @@ class GroupController extends Controller
     public function createGroup(Request $request)
     {
         $client = $request->user();
-        if ($client) {
-            $create_group = Group::create([
-                'name_group' => $request->name_group,
-                'cover_image' => $request->cover_image,
-                'privacy' => $request->privacy,
-                'display' => $request->display,
-            ]);
-            $connection = Connection::create([
-                'id_role' => Role::admin,
-                'id_client' => $client->id,
-                'id_group' => $create_group->id,
-            ]);
-            if ($connection) {
+        try {
+            if ($client) {
+                DB::beginTransaction();
+                $create_group = Group::create([
+                    'group_name' => $request->name_group,
+                    'cover_image' => "cover/cover_image.png",
+                    'privacy' => $request->privacy,
+                    'display' => $request->display,
+                ]);
+                $connection = Connection::create([
+                    'id_role' => Role::admin,
+                    'id_client' => $client->id,
+                    'id_group' => $create_group->id,
+                ]);
+                $id_invites = $request->id_invites;
+                foreach ($id_invites as $key => $value) {
+                    Connection::create([
+                        'id_role' => Role::newbie,
+                        'id_client' => $value,
+                        'id_group' => $create_group->id,
+                    ]);
+                }
+                if ($connection) {
+                    DB::commit();
+                    return response()->json([
+                        'status'    => 1,
+                        'message'   => 'Created group successfully',
+                    ]);
+                }
+            } else {
                 return response()->json([
-                    'status'    => 1,
-                    'message'   => 'Created group successfully',
+                    'status'    => 0,
+                    'message'   => 'Create group erorr',
                 ]);
             }
-        } else {
+        } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json([
                 'status'    => 0,
-                'message'   => 'Create group erorr',
+                'message'   => $th,
             ]);
         }
+    }
+    public function dataInvite(Request $request)
+    {
+        $search = '%' . $request->value . "%";
+        $client = $request->user();
+        $friends = Friend::select('clients.*')
+            ->from(function ($query) use ($client) {
+                $query->select('id_friend as result_id')
+                    ->from('friends')
+                    ->where('my_id', $client->id)
+                    ->union(
+                        DB::table('friends')
+                            ->select('my_id as result_id')
+                            ->where('id_friend', $client->id)
+                    );
+            }, 'new')
+            ->join('clients', 'clients.id', '=', 'new.result_id')
+            ->where('clients.fullname', 'like', $search)
+            ->whereNotIn('clients.id', $request->id_invites)
+            ->get();
+
+        return response()->json([
+            'friends'    => $friends,
+            'ids' => $request->all()
+        ]);
     }
 }
