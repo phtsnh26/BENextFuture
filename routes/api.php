@@ -60,7 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::group(['prefix' => '/groups'], function () {
-        Route::get('/data-discover', [GroupController::class, 'data_all_group']);                     // data  tất cả nhóm
+        Route::get('/data-discover', [GroupController::class, 'data_all_group']);                     // data tất cả nhóm
         Route::get('/data-your-group', [GroupController::class, 'data_your_group']);                  // data nhóm của người đang đăng nhập tạo
         Route::get('/data-group-participated', [GroupController::class, 'data_group_participated']);  // data nhóm đang tham gia
         Route::post('/create', [GroupController::class, 'createGroup']);                              // tạo nhóm mới

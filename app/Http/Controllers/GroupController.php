@@ -11,9 +11,15 @@ use Illuminate\Support\Facades\DB;
 
 class GroupController extends Controller
 {
-    public function data_all_group()
+    public function data_all_group(Request $request)
     {
-        $discover = Group::all();
+        $client = $request->user();
+        $group_participated = Group::join('connections', 'connections.id_group', 'groups.id')
+            ->where('id_client', $client->id)
+            ->select('groups.id')
+            ->pluck('groups.id');
+        $discover = Group::whereNotIn('id', $group_participated)
+            ->get();
         return response()->json([
             'data' => $discover,
         ]);
