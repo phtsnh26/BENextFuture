@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use App\Models\Connection;
 use App\Models\Friend;
 use App\Models\Group;
+use App\Models\RequestGroup;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -80,10 +82,11 @@ class GroupController extends Controller
                 ]);
                 $id_invites = $request->id_invites;
                 foreach ($id_invites as $key => $value) {
-                    Connection::create([
-                        'id_role' => Role::newbie,
-                        'id_client' => $value,
-                        'id_group' => $create_group->id,
+                    RequestGroup::create([
+                        'id_client'     => $client->id,
+                        'id_group'      => $create_group->id,
+                        'id_invite'     => $value,
+                        'status'        => RequestGroup::invite,
                     ]);
                 }
                 if ($connection) {
@@ -131,5 +134,64 @@ class GroupController extends Controller
             'friends'    => $friends,
             'ids' => $request->all()
         ]);
+    }
+
+    public function infoGroup($id_group)
+    {
+        $info = Group::find($id_group);
+        $member = Connection::where('id_group', $info->id)->select('id_client')->pluck('id_client');
+        $info->member = $member->count();
+        $info_members = Client::whereIn('id', $member)->inRandomOrder()->limit(3)->get();
+        return response()->json([
+            'info'    => $info,
+            'member'    => $info_members
+        ]);
+    }
+    public function dataInviteDetail(Request $request)
+    {
+        $inGroup = Connection::where('id_group', $request->id_group)->pluck('id_client');
+        $client = $request->user();
+
+        $friend = Friend::where('my_id', $client->id)
+            ->select('id_friend as result_id')
+            ->union(
+                Friend::where('id_friend', $client->id)
+                    ->select('my_id as result_id')
+            )
+            ->get();
+        $data = Client::whereIn('id', $friend)->whereNotIn('id', $inGroup)->get();
+
+        return response()->json([
+            'data'    => $data,
+        ]);
+    }
+    public function sendInvite(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $client = $request->user();
+            foreach ($request->id_invites as $key => $value) {
+                RequestGroup::create([
+                    'id_client'     => $client->id,
+                    'id_group'      => $request->id_group,
+                    'id_invite'     => $value['id'],
+                    'status'        => RequestGroup::invite,
+                ]);
+
+            }
+
+            DB::commit();
+            return response()->json([
+                'status'    => 1,
+                'message'   => 'invitation sent successfully!',
+            ]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollBack();
+            return response()->json([
+                'status'    => 0,
+                'message'   => $th,
+            ]);
+        }
     }
 }
