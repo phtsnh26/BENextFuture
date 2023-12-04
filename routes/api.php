@@ -65,6 +65,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/data-group-participated', [GroupController::class, 'data_group_participated']);  // data nhóm đang tham gia
         Route::post('/create', [GroupController::class, 'createGroup']);                              // tạo nhóm mới
         Route::post('/data-invite', [GroupController::class, 'dataInvite']);
+        Route::get('/{id_group}', [GroupController::class, 'infoGroup']);
+        Route::post('/data-invite-detail', [GroupController::class, 'dataInviteDetail']);
+        Route::post('/send-invite', [GroupController::class, 'sendInvite']);
     });
 
 
