@@ -13,9 +13,15 @@ use Illuminate\Support\Facades\DB;
 
 class GroupController extends Controller
 {
-    public function data_all_group()
+    public function data_all_group(Request $request)
     {
-        $discover = Group::all();
+        $client = $request->user();
+        $group_participated = Group::join('connections', 'connections.id_group', 'groups.id')
+            ->where('id_client', $client->id)
+            ->select('groups.id')
+            ->pluck('groups.id');
+        $discover = Group::whereNotIn('id', $group_participated)
+            ->get();
         return response()->json([
             'data' => $discover,
         ]);
@@ -50,6 +56,7 @@ class GroupController extends Controller
         $client = $request->user();
         $group_participated = Group::join('connections', 'connections.id_group', 'groups.id')
             ->where('id_client', $client->id)
+            ->where('id_role', "!=", Role::admin)
             ->select('groups.*')
             ->get();
         foreach ($group_participated as $key => $value) {
@@ -63,6 +70,25 @@ class GroupController extends Controller
             'data' => $group_participated,
         ]);
     }
+    public function dataAllGroupParticipated(Request $request)
+    {
+        $client = $request->user();
+        $group_participated = Group::join('connections', 'connections.id_group', 'groups.id')
+            ->where('id_client', $client->id)
+            ->select('groups.*')
+            ->get();
+        foreach ($group_participated as $key => $value) {
+            $getMember = Connection::where('id_group', $value->id)
+                ->groupBy('id_group')
+                ->select(DB::raw('count(*) as member'))
+                ->first(); // Sử dụng first() để lấy một dòng duy nhất từ câu truy vấn
+            $group_participated[$key]->member = $getMember->member;
+        }
+        return response()->json([
+            'data' => $group_participated,
+        ]);
+    }
+
     public function createGroup(Request $request)
     {
         $client = $request->user();
@@ -93,7 +119,7 @@ class GroupController extends Controller
                     DB::commit();
                     return response()->json([
                         'status'    => 1,
-                        'message'   => 'Created group successfully',
+                        'id_group'   => $create_group->id,
                     ]);
                 }
             } else {
@@ -177,7 +203,6 @@ class GroupController extends Controller
                     'id_invite'     => $value['id'],
                     'status'        => RequestGroup::invite,
                 ]);
-
             }
 
             DB::commit();
@@ -191,6 +216,29 @@ class GroupController extends Controller
             return response()->json([
                 'status'    => 0,
                 'message'   => $th,
+            ]);
+        }
+    }
+    public function comeInGroup(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $client = $request->user();
+            RequestGroup::create([
+                'id_group' => $request->id,
+                'id_invite' => $client->id,
+                'status' => RequestGroup::come,
+            ]);
+            DB::commit();
+            return response()->json([
+                'status'    => 1,
+                'message'   => 'You have successfully sent your request!',
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Send request failed!',
             ]);
         }
     }

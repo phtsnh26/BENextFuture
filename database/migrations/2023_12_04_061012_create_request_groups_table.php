@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('request_groups', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_client');
+            $table->integer('id_client')->nullable();
             $table->integer('id_group');
             $table->integer('id_invite');
             $table->integer('status')->default(1);
