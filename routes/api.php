@@ -60,14 +60,16 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::group(['prefix' => '/groups'], function () {
-        Route::get('/data-discover', [GroupController::class, 'data_all_group']);                     // data tất cả nhóm
-        Route::get('/data-your-group', [GroupController::class, 'data_your_group']);                  // data nhóm của người đang đăng nhập tạo
-        Route::get('/data-group-participated', [GroupController::class, 'data_group_participated']);  // data nhóm đang tham gia
-        Route::post('/create', [GroupController::class, 'createGroup']);                              // tạo nhóm mới
-        Route::post('/data-invite', [GroupController::class, 'dataInvite']);
-        Route::get('/{id_group}', [GroupController::class, 'infoGroup']);
-        Route::post('/data-invite-detail', [GroupController::class, 'dataInviteDetail']);
-        Route::post('/send-invite', [GroupController::class, 'sendInvite']);
+        Route::get('/data-discover', [GroupController::class, 'data_all_group']);                       // data tất cả nhóm
+        Route::get('/data-your-group', [GroupController::class, 'data_your_group']);                    // data nhóm bạn quản lý
+        Route::get('/data-group-participated', [GroupController::class, 'data_group_participated']);    // data nhóm đang tham gia không bao gồm nhóm admin
+        Route::get('/data-all-group-participated', [GroupController::class, 'dataAllGroupParticipated']);  // data toàn bộ nhóm đang tham gia
+        Route::post('/create', [GroupController::class, 'createGroup']);                                // tạo nhóm mới
+        Route::post('/data-invite', [GroupController::class, 'dataInvite']);                            // list bạn khi tạo nhóm
+        Route::get('/{id_group}', [GroupController::class, 'infoGroup']);                               // trang chủ nhón dựa vào id
+        Route::post('/data-invite-detail', [GroupController::class, 'dataInviteDetail']);               // list bạn để mời vào nhóm trừ những người đã trong nhóm
+        Route::post('/send-invite', [GroupController::class, 'sendInvite']);                            // sự kiệN mời bạn vào nhóm
+        Route::post('/come-in-group', [GroupController::class, 'comeInGroup']);                         // xin vào nhóm
     });
 
 
