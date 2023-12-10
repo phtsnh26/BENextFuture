@@ -2,20 +2,16 @@
 
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CommentController;
-use App\Http\Controllers\ConnectionController;
 use App\Http\Controllers\FollowerController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\GroupController;
-use App\Http\Controllers\PostController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\StoriesController;
 use App\Http\Controllers\ImageController;
-
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\StoriesController;
+use Illuminate\Support\Facades\Route;
 
 Route::post('/sign-up', [ClientController::class, 'register']);
 Route::post('/sign-in', [ClientController::class, 'login']);
-
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -61,22 +57,26 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::group(['prefix' => '/groups'], function () {
-        Route::get('/data-discover', [GroupController::class, 'data_all_group']);                           // data tất cả nhóm
-        Route::get('/data-your-group', [GroupController::class, 'data_your_group']);                        // data nhóm bạn quản lý
-        Route::get('/data-group-participated', [GroupController::class, 'data_group_participated']);        // data nhóm đang tham gia không bao gồm nhóm admin
-        Route::get('/data-all-group-participated', [GroupController::class, 'dataAllGroupParticipated']);   // data toàn bộ nhóm đang tham gia
-        Route::post('/create', [GroupController::class, 'createGroup']);                                    // tạo nhóm mới
-        Route::post('/data-invite', [GroupController::class, 'dataInvite']);                                // list bạn khi tạo nhóm
-        Route::get('/{id_group}', [GroupController::class, 'infoGroup']);                                   // trang chủ nhón dựa vào id
-        Route::post('/data-invite-detail', [GroupController::class, 'dataInviteDetail']);                   // list bạn để mời vào nhóm trừ những người đã trong nhóm
-        Route::post('/send-invite', [GroupController::class, 'sendInvite']);                                // sự kiệN mời bạn vào nhóm
-        Route::post('/come-in-group', [GroupController::class, 'comeInGroup']);                             // xin vào nhóm
-        Route::post('/data-come-in-group', [GroupController::class, 'dataComeInGroup']);                    // data xin vào nhóm
+        Route::post('/create', [GroupController::class, 'createGroup']);                                // tạo nhóm mới
+        Route::get('/data-discover', [GroupController::class, 'data_all_group']);                       // data tất cả nhóm
+        Route::get('/data-your-group', [GroupController::class, 'data_your_group']);                    // data nhóm bạn quản lý
+        Route::get('/data-group-participated', [GroupController::class, 'data_group_participated']);    // data nhóm đang tham gia không bao gồm nhóm admin
+        Route::get('/data-all-group-participated', [GroupController::class, 'dataAllGroupParticipated']);  // data toàn bộ nhóm đang tham gia
+        Route::post('/data-invite', [GroupController::class, 'dataInvite']);                            // list bạn khi tạo nhóm
+        Route::post('/data-invited', [GroupController::class, 'dataInvited']);                          // list lời mời của bạn
+        Route::get('/{id_group}', [GroupController::class, 'infoGroup']);                               // trang chủ nhón dựa vào id
+        Route::post('/data-invite-detail', [GroupController::class, 'dataInviteDetail']);               // list bạn để mời vào nhóm trừ những người đã trong nhóm
+        Route::post('/send-invite', [GroupController::class, 'sendInvite']);                            // mời bạn vào nhóm
+        Route::post('/come-in-group', [GroupController::class, 'comeInGroup']);                         // xin vào nhóm
+        Route::post('/current-group', [GroupController::class, 'getData']);                             // lấy thông tin nhóm hiện tại thông qua id
+        Route::post('/update-privacy', [GroupController::class, 'updatePrivacy']);                      // cập nhật quyền riêng tư nhóm
+        Route::post('/update-display', [GroupController::class, 'updateDisplay']);                      // cập nhật quyền hiển thị nhóm
+        Route::post('/update-join-approval', [GroupController::class, 'updateJoinApproval']);           // cập nhật duyệt vào nhóm
+        Route::post('/update-post-approval', [GroupController::class, 'updatePostApproval']);           // cập nhật duyệt đăng bài
         Route::post('/approve-connection', [ConnectionController::class, 'approveConnection']);             // phê duyệt lời mời từ Request_Group vào Connection
         Route::post('/approve-connection-all', [ConnectionController::class, 'approveConnectionAll']);      // phê duyệt tất cả lời mời từ Request_Group vào Connection
         Route::post('/refuse-connection', [ConnectionController::class, 'refuseConnection']);               // từ chối lời mời từ Request_Group và xóa khỏi bảng Request_Group
         Route::post('/refuse-connection-all', [ConnectionController::class, 'refuseConnectionAll']);        // từ chối lời mời từ Request_Group và xóa khỏi bảng Request_Group
-
         Route::group(['prefix' => '/members'], function () {
             Route::post('/data', [GroupController::class, 'dataMember']);
             Route::post('/data-friend', [GroupController::class, 'dataMemberFriend']);

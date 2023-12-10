@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Models\Follower;
 use App\Models\Friend;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class FollowerController extends Controller
@@ -16,7 +17,7 @@ class FollowerController extends Controller
             ->where('id_follower', $request->id)->first();
         if ($check) {
             $check->update([
-                'status' => 0
+                'status' => Follower::friend_request,
             ]);
             return response()->json([
                 'status'    => 1,
@@ -27,6 +28,11 @@ class FollowerController extends Controller
                 'my_id' => $client->id,
                 'id_follower' => $request->id,
                 'status' => Follower::friend_request,
+            ]);
+            Notification::create([
+                'id_client'             => $request->id,
+                'my_id'                 => $client->id,
+                'type'                  => Notification::request_friend,
             ]);
             if ($follow) {
                 return response()->json([

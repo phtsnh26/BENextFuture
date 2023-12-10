@@ -17,7 +17,7 @@ class ConnectionController extends Controller
             Connection::create([
                 'id_client' => $request->id,
                 'id_group' => $request->id_group,
-                'id_role' => Role::newbie,
+                'id_role' => Role::member,
             ]);
             RequestGroup::where('id_group', $request->id_group)
                 ->where('id_invite', $request->id)
@@ -45,7 +45,7 @@ class ConnectionController extends Controller
                 Connection::create([
                     'id_client' => $value['id_invite'],
                     'id_group' => $value['id_group'],
-                    'id_role' => Role::newbie,
+                    'id_role' => Role::member,
                 ]);
                 $value->delete();
             }
