@@ -12,8 +12,9 @@ class Role extends Model
     protected $fillable = [
         'role_name',
     ];
-    const newbie = 1;
+    const member = 1;
     const admin = 2;
-    const post_moderation = 3;
-    const member_moderation = 4;
+    const post_moderator = 3;
+    const member_moderator = 4;
+    const moderator = 5;
 }
