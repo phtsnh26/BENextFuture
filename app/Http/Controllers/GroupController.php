@@ -242,4 +242,93 @@ class GroupController extends Controller
             ]);
         }
     }
+    public function dataComeInGroup(Request $request)
+    {
+        // SELECT clients.fullname,clients.avatar,clients.id,request_groups.created_at
+        // FROM (request_groups
+        // join clients on clients.id  = request_groups.id_invite)
+        // where request_groups.status = 1 and request_groups.id_group = 3
+
+        $comeIn = RequestGroup::join('clients', 'clients.id', 'request_groups.id_invite')
+            ->where('request_groups.status', RequestGroup::come)
+            ->where('request_groups.id_group', $request->id_group)
+            ->select('clients.fullname', 'clients.avatar', 'request_groups.created_at', 'clients.id')
+            ->get();
+        foreach ($comeIn as $key => $value) {
+            $groupParticipated = Connection::where('id_client', $value['id'])->get();
+            $comeIn[$key]->groupParticipated = $groupParticipated->count();
+        }
+        return response()->json([
+            'data' => $comeIn,
+        ]);
+    }
+    public function dataMember(Request $request)
+    {
+        $client = $request->user();
+        $friends = Friend::where('id_friend', $client->id)
+            ->select('my_id')
+            ->Union(
+                Friend::where('my_id', $client->id)
+                    ->select('id_friend')
+            )->pluck('my_id');
+        $members = Connection::join('clients', 'clients.id', 'connections.id_client')
+            ->leftJoin('roles', 'roles.id', 'connections.id_role')
+            ->whereNotIn('clients.id', $friends)
+            ->where('clients.id', '!=', $client->id)
+            ->where('connections.id_group', $request->id_group)
+            ->where('id_role', Role::member)
+            ->select('clients.fullname', 'clients.avatar', 'clients.id', 'roles.role_name as role')
+            ->get();
+        $count = Connection::where('id_group', $request->id_group)->get();
+        return response()->json([
+            'data' => $members,
+            'count' => $count->count(),
+        ]);
+    }
+    public function dataMemberFriend(Request $request)
+    {
+        $client = $request->user();
+        $friends = Friend::where('id_friend', $client->id)
+            ->select('my_id')
+            ->Union(
+                Friend::where('my_id', $client->id)
+                    ->select('id_friend')
+            )->pluck('my_id');
+        $members = Connection::leftJoin('clients', 'clients.id', 'connections.id_client')
+            ->leftJoin('roles', 'roles.id', 'connections.id_role')
+            ->where('connections.id_group', $request->id_group)
+            ->whereIn('clients.id', $friends)
+            ->select('clients.fullname', 'clients.avatar', 'clients.id', 'roles.role_name as role', 'status')
+            ->get();
+        return response()->json([
+            'data' => $members,
+        ]);
+    }
+    public function dataAdmin(Request $request)
+    {
+
+        $members = Connection::leftJoin('clients', 'clients.id', 'connections.id_client')
+            ->leftJoin('roles', 'roles.id', 'connections.id_role')
+            ->where('connections.id_group', $request->id_group)
+            ->where('id_role', Role::admin)
+            ->select('clients.fullname', 'clients.avatar', 'clients.id', 'roles.role_name as role')
+            ->get();
+        return response()->json([
+            'data' => $members,
+        ]);
+    }
+    public function dataModeration(Request $request)
+    {
+        $members = Connection::leftJoin('clients', 'clients.id', 'connections.id_client')
+            ->leftJoin('roles', 'roles.id', 'connections.id_role')
+            ->where('connections.id_group', $request->id_group)
+            ->where('id_role', Role::post_moderator)
+            ->orWhere('id_role', Role::member_moderator)
+            ->orWhere('id_role', Role::moderator)
+            ->select('clients.fullname', 'clients.avatar', 'clients.id', 'roles.role_name as role')
+            ->get();
+        return response()->json([
+            'data' => $members,
+        ]);
+    }
 }

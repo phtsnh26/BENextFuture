@@ -38,7 +38,7 @@ class ImageController extends Controller
         $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $imageData));
         $imageName = time() . '.png';
         File::put(public_path('img/' . $imageName), $imageData);
-        
+
         return response()->json([
             'message' => 'Ảnh đã được tải lên và lưu trữ.',
             'status' => 1,
