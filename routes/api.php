@@ -2,10 +2,12 @@
 
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ConnectionController;
 use App\Http\Controllers\FollowerController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\StoriesController;
 use Illuminate\Support\Facades\Route;
@@ -84,7 +86,9 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/data-moderation', [GroupController::class, 'dataModeration']);
         });
     });
-
+    Route::group(['prefix' => '/notification'], function () {
+        Route::get('/data', [NotificationController::class, 'getData']);
+    });
 
     Route::post('/upload-file', [ImageController::class, 'upload']);
     Route::post('/upload-image', [ImageController::class, 'uploadImage']);
