@@ -7,6 +7,7 @@ use App\Http\Controllers\FollowerController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\StoriesController;
@@ -70,6 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/data-invite-detail', [GroupController::class, 'dataInviteDetail']);               // list bạn để mời vào nhóm trừ những người đã trong nhóm
         Route::post('/send-invite', [GroupController::class, 'sendInvite']);                            // mời bạn vào nhóm
         Route::post('/come-in-group', [GroupController::class, 'comeInGroup']);                         // xin vào nhóm
+        Route::post('/data-come-in-group', [GroupController::class, 'dataComeInGroup']);                // data xin vào nhóm
         Route::post('/current-group', [GroupController::class, 'getData']);                             // lấy thông tin nhóm hiện tại thông qua id
         Route::post('/update-privacy', [GroupController::class, 'updatePrivacy']);                      // cập nhật quyền riêng tư nhóm
         Route::post('/update-display', [GroupController::class, 'updateDisplay']);                      // cập nhật quyền hiển thị nhóm
@@ -79,11 +81,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/approve-connection-all', [ConnectionController::class, 'approveConnectionAll']);      // phê duyệt tất cả lời mời từ Request_Group vào Connection
         Route::post('/refuse-connection', [ConnectionController::class, 'refuseConnection']);               // từ chối lời mời từ Request_Group và xóa khỏi bảng Request_Group
         Route::post('/refuse-connection-all', [ConnectionController::class, 'refuseConnectionAll']);        // từ chối lời mời từ Request_Group và xóa khỏi bảng Request_Group
+
         Route::group(['prefix' => '/members'], function () {
-            Route::post('/data', [GroupController::class, 'dataMember']);
-            Route::post('/data-friend', [GroupController::class, 'dataMemberFriend']);
-            Route::post('/data-admin', [GroupController::class, 'dataAdmin']);
-            Route::post('/data-moderation', [GroupController::class, 'dataModeration']);
+            Route::post('/data', [GroupController::class, 'dataMember']);                               // Data tất cả member của group
+            Route::post('/data-friend', [GroupController::class, 'dataMemberFriend']);                  // Data bạn bè có trong group
+            Route::post('/data-admin', [GroupController::class, 'dataAdmin']);                          // Data admin của group
+            Route::post('/data-moderation', [GroupController::class, 'dataModeration']);                // Data quyền Moderation thua admin trong group
+            Route::post('/remove-member', [MemberController::class, 'removeMember']);                   // Xóa member ra khỏi group
         });
     });
     Route::group(['prefix' => '/notification'], function () {

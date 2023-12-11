@@ -11,17 +11,18 @@ class FriendController extends Controller
 {
     public function getAllFriend(Request $request)
     {
+
         $client = $request->user();
         $id_friends = Friend::where('my_id', $client->id)
-        ->select('id_friend as result_id')
-        ->union(
-            Friend::where('id_friend', $client->id)
-            ->select('my_id as result_id')
-        );
+            ->select('id_friend as result_id')
+            ->union(
+                Friend::where('id_friend', $client->id)
+                    ->select('my_id as result_id')
+            );
 
         $all_friend = Client::joinSub($id_friends, 'friends', function ($join) {
-                $join->on('clients.id', '=', 'friends.result_id');
-            })
+            $join->on('clients.id', '=', 'friends.result_id');
+        })
             ->select('clients.*')
             ->get();
 
