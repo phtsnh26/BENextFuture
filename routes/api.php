@@ -87,7 +87,10 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/data-friend', [GroupController::class, 'dataMemberFriend']);                  // Data bạn bè có trong group
             Route::post('/data-admin', [GroupController::class, 'dataAdmin']);                          // Data admin của group
             Route::post('/data-moderation', [GroupController::class, 'dataModeration']);                // Data quyền Moderation thua admin trong group
+            Route::post('/search-member', [MemberController::class, 'searchMember']);              // Tìm kiếm member trong group
             Route::post('/remove-member', [MemberController::class, 'removeMember']);                   // Xóa member ra khỏi group
+            Route::post('/grant-permission', [MemberController::class, 'grantPermissions']);            // cấp quyền cho member trong group
+            Route::post('/remove-permission', [MemberController::class, 'removePermissions']);          // xóa quyền cho member trong group
         });
     });
     Route::group(['prefix' => '/notification'], function () {

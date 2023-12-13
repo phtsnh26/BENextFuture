@@ -363,7 +363,6 @@ class GroupController extends Controller
     }
     public function updatePostApproval(Request $request)
     {
-
         try {
             DB::beginTransaction();
             $group = Group::find($request->id_group);
