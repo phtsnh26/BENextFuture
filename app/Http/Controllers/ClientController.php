@@ -6,8 +6,10 @@ use App\Models\Client;
 use App\Models\Follower;
 use App\Models\Friend;
 use App\Models\User;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -122,16 +124,22 @@ class ClientController extends Controller
                     ->where('id_friend', $userId)
             )
             ->get();
+        $birthDate = new DateTime($client->date_of_birth);
+        $birthYear = $birthDate->format('Y');
 
         $friendIds = $friends->pluck('result_id')->toArray();
         $data = Client::where('id', '!=', $client->id)
             ->whereNotIn('id', $friendIds)
             ->whereNotIn('id', $follower->toArray())
-            ->whereNotIn('id', $follow->toArray())
-            ->inRandomOrder()
-            ->get();
+            ->whereNotIn('id', $follow->toArray());
+        if ($birthYear >= 2000) {
+            $data->orderByDESC('date_of_birth');
+        } else {
+            $data->orderBy('date_of_birth');
+        }
+        $result = $data->get();
         return response()->json([
-            'data' => $data,
+            'data' => $result,
         ]);
     }
     public function getProfile(Request $request)
