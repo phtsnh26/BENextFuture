@@ -17,13 +17,13 @@ class FollowerSeeder extends Seeder
         DB::table("followers")->delete();
         DB::table("followers")->truncate();
         for ($i = 0; $i < 500; $i++) {
-            DB::table("followers")->insert([
+            Follower::create(
                 [
                     'my_id' => rand(1, 38),
                     'id_follower' => rand(1, 38),
                     'status' => Follower::friend_request,
                 ],
-            ]);
+            );
         }
         $duplicateRecords = Follower::select('my_id', 'id_follower')
             ->groupBy('my_id', 'id_follower')

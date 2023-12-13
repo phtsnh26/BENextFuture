@@ -492,12 +492,11 @@ class GroupController extends Controller
     }
     public function dataModeration(Request $request)
     {
+
         $members = Connection::leftJoin('clients', 'clients.id', 'connections.id_client')
             ->leftJoin('roles', 'roles.id', 'connections.id_role')
+            ->whereIn('id_role', [Role::post_moderator, Role::member_moderator, Role::moderator])
             ->where('connections.id_group', $request->id_group)
-            ->where('id_role', Role::post_moderator)
-            ->orWhere('id_role', Role::member_moderator)
-            ->orWhere('id_role', Role::moderator)
             ->select('clients.fullname', 'clients.avatar', 'clients.id', 'roles.role_name as role')
             ->get();
         return response()->json([
