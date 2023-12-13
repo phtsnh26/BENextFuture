@@ -92,6 +92,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::group(['prefix' => '/notification'], function () {
         Route::get('/data', [NotificationController::class, 'getData']);
+        Route::post('/info-invite', [NotificationController::class, 'infoInvite']);                    // thông tin người gửi trong group
+        Route::post('/accept-invite', [NotificationController::class, 'acceptInvite']);                // chấp nhận lời mời vào group
+        Route::post('/remove-invite', [NotificationController::class, 'removeInvite']);                // Xoá lời mời vào group
+
     });
 
     Route::post('/upload-file', [ImageController::class, 'upload']);
