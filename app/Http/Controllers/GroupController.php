@@ -117,6 +117,12 @@ class GroupController extends Controller
                         'id_invite'     => $value,
                         'status'        => RequestGroup::invite,
                     ]);
+                    Notification::create([
+                        'id_client'     => $value,
+                        'my_id'         => $client->id,
+                        'id_group'      => $create_group->id,
+                        'type'          => Notification::invite_group,
+                    ]);
                 }
                 if ($connection) {
                     DB::commit();
