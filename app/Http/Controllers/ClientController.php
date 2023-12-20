@@ -218,4 +218,24 @@ class ClientController extends Controller
             }
         }
     }
+
+    public function authorization(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $token = $request->bearerToken();
+
+        if (!$token) {
+            return response()->json(['message' => 'Token is missing'], 401);
+        }
+        if (Auth::guard('sanctum')->check()) {
+            return response()->json([
+                'message' => 'Token is valid',
+                'status' => true,
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Token is invalid',
+            'status' => false
+        ], 200);
+    }
 }
