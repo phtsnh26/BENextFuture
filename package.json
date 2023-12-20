@@ -9,5 +9,9 @@
         "axios": "^1.1.2",
         "laravel-vite-plugin": "^0.8.0",
         "vite": "^4.0.0"
+    },
+    "dependencies": {
+        "express": "^4.18.2",
+        "socket.io": "^2.5.0"
     }
 }

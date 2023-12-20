@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/sign-up', [ClientController::class, 'register']);
 Route::post('/sign-in', [ClientController::class, 'login']);
-
+Route::get('/authorization', [ClientController::class, 'authorization']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
