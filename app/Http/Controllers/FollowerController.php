@@ -163,6 +163,11 @@ class FollowerController extends Controller
                 'status'    => 1,
                 'message' => 'Refuse successfully'
             ]);
+        } else {
+            return response()->json([
+                'status'    => 0,
+                'message' => 'Refuse an unsuccessful invitation'
+            ]);
         }
     }
 }
