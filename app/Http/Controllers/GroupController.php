@@ -479,12 +479,11 @@ class GroupController extends Controller
     }
     public function dataAdmin(Request $request)
     {
-
         $members = Connection::leftJoin('clients', 'clients.id', 'connections.id_client')
             ->leftJoin('roles', 'roles.id', 'connections.id_role')
             ->where('connections.id_group', $request->id_group)
             ->where('id_role', Role::admin)
-            ->select('clients.fullname', 'clients.avatar', 'clients.id', 'roles.role_name as role')
+            ->select('clients.fullname', 'clients.avatar', 'clients.id', 'roles.role_name as role', 'connections.id_role')
             ->get();
         return response()->json([
             'data' => $members,

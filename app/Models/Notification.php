@@ -15,6 +15,7 @@ class Notification extends Model
         'id_group',
         'id_post',
         'type',
+        'status',
     ];
     const request_friend = 1;       //gửi lời mời kết bạn
     const invite_group = 2;         //mời tham gia group
@@ -24,5 +25,4 @@ class Notification extends Model
     const like_story = 6;
     const tag_comment = 7;
     const tag_post = 8;
-
 }

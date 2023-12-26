@@ -75,10 +75,16 @@ class FollowerController extends Controller
             ->select('clients.*')
             ->limit(5)
             ->get();
+        $count = Follower::join('clients', 'clients.id', 'followers.my_id')
+            ->where('id_follower', $client->id)
+            ->Where('followers.status', Follower::friend_request)
+            ->select('clients.*')
+            ->get();
         if ($follower) {
             return response()->json([
                 'status' => 1,
                 'data'  => $follower,
+                'count' => $count,
             ]);
         } else {
             return response()->json([
@@ -156,6 +162,11 @@ class FollowerController extends Controller
             return response()->json([
                 'status'    => 1,
                 'message' => 'Refuse successfully'
+            ]);
+        } else {
+            return response()->json([
+                'status'    => 0,
+                'message' => 'Refuse an unsuccessful invitation'
             ]);
         }
     }
