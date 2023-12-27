@@ -177,6 +177,7 @@ class GroupController extends Controller
         $member = Connection::where('id_group', $info->id)->select('id_client')->pluck('id_client');
         $info->member = $member->count();
         $info_members = Client::whereIn('id', $member)->inRandomOrder()->limit(3)->get();
+    
         return response()->json([
             'info'    => $info,
             'member'    => $info_members
