@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/add-friend', [FollowerController::class, "addFriend"]);
         Route::post('/cancel-friend', [FollowerController::class, "cancelFriend"]);
 
-        Route::get('/request-friend', [FollowerController::class, "requestFriend"]);
+        Route::get('/request-friend', [FollowerController::class, "requestFriend"]);    // danh sách những người gửi lời mời cho mình
         Route::post('/request-friend-limit', [FollowerController::class, "requestFriendLimit"]);
         Route::post('/accept-friend', [FollowerController::class, "acceptFriend"]);
         Route::post('/delete-friend', [FollowerController::class, "deleteFriend"]);
@@ -44,8 +44,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/data', [ClientController::class, "getProfile"]);
     });
 
-    Route::get('/dataFull', [ClientController::class, "getAllData"]);
-    Route::get('/data-all-friend', [FriendController::class, "getAllFriend"]);
+    Route::get('/dataFull', [ClientController::class, "getAllData"]);               // những người bạn có thể biết
+    Route::get('/data-all-friend', [FriendController::class, "getAllFriend"]);      // danh sách friend
     Route::post('/delete-friend', [FriendController::class, "delFriend"]);
 
 
@@ -81,6 +81,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/approve-connection-all', [ConnectionController::class, 'approveConnectionAll']);      // phê duyệt tất cả lời mời từ Request_Group vào Connection
         Route::post('/refuse-connection', [ConnectionController::class, 'refuseConnection']);               // từ chối lời mời từ Request_Group và xóa khỏi bảng Request_Group
         Route::post('/refuse-connection-all', [ConnectionController::class, 'refuseConnectionAll']);        // từ chối lời mời từ Request_Group và xóa khỏi bảng Request_Group
+        Route::post('/check-role', [ConnectionController::class, 'checkRole']);                         // check giao diện
 
         Route::group(['prefix' => '/members'], function () {
             Route::post('/data', [GroupController::class, 'dataMember']);                               // Data tất cả member của group

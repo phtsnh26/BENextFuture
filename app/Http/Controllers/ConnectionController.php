@@ -107,4 +107,16 @@ class ConnectionController extends Controller
             ]);
         }
     }
+    public function checkRole(Request $request){
+        $check = Connection::where('id_client', $request->user()->id)->where('id_group', $request->id_group)->first();
+        if($check){
+            return response()->json([
+                'viewType'    => 1,
+            ]);
+        }else{
+            return response()->json([
+                'viewType'    => 0,
+            ]);
+        }
+    }
 }
