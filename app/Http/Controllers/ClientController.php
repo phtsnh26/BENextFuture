@@ -138,6 +138,11 @@ class ClientController extends Controller
             $data->orderBy('date_of_birth');
         }
         $result = $data->get();
+
+        foreach ($result as $key => $value) {
+            $mutual = array_intersect(Client::getFriend($value['id']), Client::getFriend($client->id));
+            $result[$key]->mutual = count($mutual);
+        }
         return response()->json([
             'data' => $result,
         ]);

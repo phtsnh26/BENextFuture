@@ -3,10 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Group;
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-
 class GroupSeeder extends Seeder
 {
     /**
@@ -32,6 +32,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::visible,
                 'join_approval'   => true,
                 'post_approval'   => true,
+
             ],
             [
                 'group_name'      => "Liên Minh Huyền Thoại",
@@ -40,6 +41,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::visible,
                 'join_approval'   => true,
                 'post_approval'   => true,
+
             ],
             [
                 'group_name'      => "Cộng đồng NextJS",
@@ -48,6 +50,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::visible,
                 'join_approval'   => true,
                 'post_approval'   => true,
+
             ],
             [
                 'group_name'      => "Hội thiểu năng",
@@ -56,6 +59,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::visible,
                 'join_approval'   => true,
                 'post_approval'   => true,
+
             ],
             [
                 'group_name'      => "DKU Group",
@@ -64,6 +68,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::visible,
                 'join_approval'   => true,
                 'post_approval'   => true,
+
             ],
             [
                 'group_name'      => "Learn HTML, CSS and JavaScript",
@@ -72,6 +77,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::hidden,
                 'join_approval'   => true,
                 'post_approval'   => true,
+
             ], [
                 'group_name'      => "Tech Enthusiasts",
                 'cover_image'     => "cover/cover_image.png",
@@ -79,6 +85,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::visible,
                 'join_approval'   => true,
                 'post_approval'   => true,
+
             ],
             [
                 'group_name'      => "Photography Lovers",
@@ -87,6 +94,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::visible,
                 'join_approval'   => false,
                 'post_approval'   => true,
+
             ],
             [
                 'group_name'      => "Cooking Enthusiasts",
@@ -118,6 +126,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::hidden,
                 'join_approval'   => true,
                 'post_approval'   => true,
+
             ],
             [
                 'group_name'      => "Book Club",
@@ -134,6 +143,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::visible,
                 'join_approval'   => false,
                 'post_approval'   => true,
+
             ],
             [
                 'group_name'      => "Artists' Corner",
@@ -142,6 +152,8 @@ class GroupSeeder extends Seeder
                 'display'         => Group::visible,
                 'join_approval'   => false,
                 'post_approval'   => false,
+
+
             ],
             [
                 'group_name'      => "Film Buffs",
@@ -150,6 +162,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::hidden,
                 'join_approval'   => true,
                 'post_approval'   => true,
+
             ],
             [
                 'group_name'      => "Science Enthusiasts",
@@ -158,6 +171,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::visible,
                 'join_approval'   => (bool) rand(0, 1),
                 'post_approval'   => (bool) rand(0, 1),
+
             ],
             // Dòng 2
             [
@@ -167,6 +181,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::visible,
                 'join_approval'   => (bool) rand(0, 1),
                 'post_approval'   => (bool) rand(0, 1),
+
             ],
             // Dòng 3
             [
@@ -176,6 +191,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::visible,
                 'join_approval'   => (bool) rand(0, 1),
                 'post_approval'   => (bool) rand(0, 1),
+
             ],
             // Dòng 4
             [
@@ -185,6 +201,7 @@ class GroupSeeder extends Seeder
                 'display'         => Group::hidden,
                 'join_approval'   => (bool) rand(0, 1),
                 'post_approval'   => (bool) rand(0, 1),
+
             ],
             // Dòng 5
             [
@@ -194,8 +211,14 @@ class GroupSeeder extends Seeder
                 'display'         => Group::visible,
                 'join_approval'   => (bool) rand(0, 1),
                 'post_approval'   => (bool) rand(0, 1),
+
             ],
 
         ]);
+        $groups = Group::all();
+        foreach ($groups as $key => $value) {
+            $value->created_at = Carbon::now()->subDays(rand(365, 3 * 365));
+            $value->save();
+        }
     }
 }

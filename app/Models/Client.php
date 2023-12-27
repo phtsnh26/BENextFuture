@@ -30,4 +30,16 @@ class Client extends Authenticatable
     const other = -1;
     const account = 1;
     const lock_account = -1;
+    public static function getFriend($id)
+    {
+        $result = Friend::select('id_friend as id_client')
+            ->where('my_id', $id)
+            ->union(
+                Friend::select('my_id as id_client')
+                    ->where('id_friend', $id)
+            )
+            ->pluck('id_client')->toArray();
+        return $result;
+    }
+
 }

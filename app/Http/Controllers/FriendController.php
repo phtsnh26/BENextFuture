@@ -23,6 +23,10 @@ class FriendController extends Controller
         })
             ->select('clients.*')
             ->get();
+        foreach ($all_friend as $key => $value) {
+            $mutual = array_intersect(Client::getFriend($value['id']), Client::getFriend($client->id));
+            $all_friend[$key]->mutual = count($mutual);
+        }
         if ($all_friend) {
             return response()->json([
                 'status'    => 1,

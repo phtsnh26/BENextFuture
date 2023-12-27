@@ -17,6 +17,7 @@ class Group extends Model
         'display',
         'join_approval',
         'post_approval',
+        'created_at',
     ];
     const public = 1;
     const private = -1;

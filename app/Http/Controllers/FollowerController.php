@@ -75,11 +75,18 @@ class FollowerController extends Controller
             ->select('clients.*')
             ->limit(5)
             ->get();
+
+        foreach ($follower as $key => $value) {
+            $mutual = array_intersect(Client::getFriend($value['id']), Client::getFriend($client->id));
+            $follower[$key]->mutual = count($mutual);
+        }
+
         $count = Follower::join('clients', 'clients.id', 'followers.my_id')
             ->where('id_follower', $client->id)
             ->Where('followers.status', Follower::friend_request)
             ->select('clients.*')
             ->get();
+
         if ($follower) {
             return response()->json([
                 'status' => 1,
