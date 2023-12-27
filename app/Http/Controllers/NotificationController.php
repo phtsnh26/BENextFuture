@@ -14,6 +14,7 @@ class NotificationController extends Controller
     public function getData(Request $request)
     {
         $client = $request->user();
+
         $data = Notification::select(
             'notifications.*',
             'sender.fullname as sender',
@@ -33,10 +34,14 @@ class NotificationController extends Controller
         ->where('notifications.id_client', $client->id)
         ->orderBy('notifications.created_at', 'desc')
         ->get();
-
+        $new_notification = Notification::where('id_client', $client->id)
+                                        ->where('status',1)
+                                        ->get()
+                                        ->count();
 
         return response()->json([
             'data' => $data,
+            'new_notification' => $new_notification
         ]);
     }
     public function infoInvite(Request $request){
@@ -88,5 +93,14 @@ class NotificationController extends Controller
                 'message'   => $th,
             ]);
         }
+    }
+    public function updateStatus(Request $request){
+        $notification = Notification::find($request->id);
+        $notification->update([
+            'status'    => 0
+        ]);
+        return response()->json([
+            'status'    => $notification
+        ]);
     }
 }
