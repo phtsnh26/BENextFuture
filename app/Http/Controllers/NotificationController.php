@@ -32,7 +32,7 @@ class NotificationController extends Controller
         ->leftJoin('clients as receiver', 'receiver.id', '=', 'notifications.id_client')
         ->leftJoin('clients as name_poster', 'name_poster.id', '=', 'post.id_client')
         ->where('notifications.id_client', $client->id)
-        ->orderBy('notifications.created_at', 'desc')
+        ->orderBy('notifications.updated_at', 'desc')
         ->get();
         $new_notification = Notification::where('id_client', $client->id)
                                         ->where('status',1)
@@ -46,7 +46,12 @@ class NotificationController extends Controller
     }
     public function infoInvite(Request $request){
         $notification = Notification::find($request->id);
-        $client = Client::find($notification->my_id);
+        // $client = Client::find($notification->my_id);
+        $client = RequestGroup::leftJoin('clients', 'clients.id', 'request_groups.id_client')
+        ->select('request_groups.updated_at as time', 'clients.*')
+        ->where('id_client', $notification->my_id)
+            ->where('id_invite', $notification->id_client)
+            ->first();
         return response()->json([
             'client'    => $client,
             'notification' => $notification

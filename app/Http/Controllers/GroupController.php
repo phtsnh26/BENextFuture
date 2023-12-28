@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\Connection;
+use App\Models\Follower;
 use App\Models\Friend;
 use App\Models\Group;
 use App\Models\Notification;
@@ -260,6 +261,8 @@ class GroupController extends Controller
                     'id_invite' => $client->id,
                     'status' => RequestGroup::come,
                 ]);
+            } else {
+                $check->touch();
             }
 
             DB::commit();
@@ -425,7 +428,8 @@ class GroupController extends Controller
         $comeIn = RequestGroup::join('clients', 'clients.id', 'request_groups.id_invite')
             ->where('request_groups.status', RequestGroup::come)
             ->where('request_groups.id_group', $request->id_group)
-            ->select('clients.fullname', 'clients.avatar', 'request_groups.created_at', 'clients.id')
+            ->select('clients.fullname', 'clients.avatar', 'request_groups.updated_at as created_at', 'clients.id')
+            ->orderByDesc('created_at')
             ->get();
         foreach ($comeIn as $key => $value) {
             $groupParticipated = Connection::where('id_client', $value['id'])->get();
@@ -452,6 +456,14 @@ class GroupController extends Controller
             ->where('id_role', Role::member)
             ->select('clients.fullname', 'clients.avatar', 'clients.id', 'roles.role_name as role')
             ->get();
+        foreach ($members as $key => $value) {
+            $check = Follower::where('id_follower', $value['id'])->where('my_id', $client->id)->first();
+            if ($check) {
+                $members[$key]->status = 1;
+            }else{
+                $members[$key]->status = 0;
+            }
+        }
         $count = Connection::where('id_group', $request->id_group)->get();
         return response()->json([
             'data' => $members,
@@ -485,6 +497,14 @@ class GroupController extends Controller
             ->where('id_role', Role::admin)
             ->select('clients.fullname', 'clients.avatar', 'clients.id', 'roles.role_name as role', 'connections.id_role')
             ->get();
+        foreach ($members as $key => $value) {
+            $check = Follower::where('id_follower', $value['id'])->where('my_id', $request->user()->id)->first();
+            if ($check) {
+                $members[$key]->status = 1;
+            } else {
+                $members[$key]->status = 0;
+            }
+        }
         return response()->json([
             'data' => $members,
         ]);
@@ -498,6 +518,14 @@ class GroupController extends Controller
             ->where('connections.id_group', $request->id_group)
             ->select('clients.fullname', 'clients.avatar', 'clients.id', 'roles.role_name as role')
             ->get();
+        foreach ($members as $key => $value) {
+            $check = Follower::where('id_follower', $value['id'])->where('my_id', $request->user()->id)->first();
+            if ($check) {
+                $members[$key]->status = 1;
+            } else {
+                $members[$key]->status = 0;
+            }
+        }
         return response()->json([
             'data' => $members,
         ]);

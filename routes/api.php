@@ -82,6 +82,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/refuse-connection', [ConnectionController::class, 'refuseConnection']);               // từ chối lời mời từ Request_Group và xóa khỏi bảng Request_Group
         Route::post('/refuse-connection-all', [ConnectionController::class, 'refuseConnectionAll']);        // từ chối lời mời từ Request_Group và xóa khỏi bảng Request_Group
         Route::post('/check-role', [ConnectionController::class, 'checkRole']);                         // check giao diện
+        Route::post('/check-request', [ConnectionController::class, 'checkRequest']);                   // check xem đã xin vào group này chưa
+        Route::post('/undo-request', [ConnectionController::class, 'undoRequest']);                     // huỷ xin vào group
 
         Route::group(['prefix' => '/members'], function () {
             Route::post('/data', [GroupController::class, 'dataMember']);                               // Data tất cả member của group
