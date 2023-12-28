@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use App\Models\Connection;
 use App\Models\RequestGroup;
 use App\Models\Role;
@@ -107,15 +108,59 @@ class ConnectionController extends Controller
             ]);
         }
     }
-    public function checkRole(Request $request){
+    public function checkRole(Request $request)
+    {
         $check = Connection::where('id_client', $request->user()->id)->where('id_group', $request->id_group)->first();
-        if($check){
-            return response()->json([
-                'viewType'    => 1,
-            ]);
-        }else{
+        if ($check) {
+            if (count(array_intersect([$check->id_role], [Role::member, Role::post_moderator]))) {
+                return response()->json(['viewType' => 2]);
+            } else {
+                return response()->json(['viewType' => 1]);
+            }
+        } else {
             return response()->json([
                 'viewType'    => 0,
+            ]);
+        }
+    }
+    public function checkRequest(Request $request)
+    {
+
+        $check = RequestGroup::where('id_group', $request->id_group)->where('id_invite', $request->user()->id)
+            ->first();
+        if ($check && $check->status == RequestGroup::come) {
+            return response()->json([
+                'check'    => 1,
+            ]);
+        } else {
+            if (!$check) {
+                return response()->json(['check' => 0]);
+            }
+            $client = RequestGroup::leftJoin('clients', 'clients.id', 'request_groups.id_client')
+                ->select('request_groups.updated_at as time', 'clients.*')
+                ->where('id_client', $check->id_client)
+                ->where('id_invite', $check->id_invite)
+                ->get();
+            return response()->json([
+                'check' => -1,
+                'client' => $client
+            ]);
+        }
+    }
+    public function undoRequest(Request $request)
+    {
+        $client = $request->user();
+        $check = RequestGroup::where('id_group', $request->id_group)->where('id_invite', $client->id)->first();
+        if ($check) {
+            $check->delete();
+            return response()->json([
+                'status'    => 1,
+                'message'   => 'Undo invitation successfully!',
+            ]);
+        } else {
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'The group does not exist or there is a login error!',
             ]);
         }
     }
