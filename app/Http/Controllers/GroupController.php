@@ -13,6 +13,7 @@ use App\Models\Role;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Nette\Utils\Random;
 
 class GroupController extends Controller
 {
@@ -172,16 +173,43 @@ class GroupController extends Controller
         ]);
     }
 
-    public function infoGroup($id_group)
+    public function infoGroup($id_group, Request $request)
     {
         $info = Group::find($id_group);
         $member = Connection::where('id_group', $info->id)->select('id_client')->pluck('id_client');
         $info->member = $member->count();
-        $info_members = Client::whereIn('id', $member)->inRandomOrder()->limit(3)->get();
-    
+        $info_members = Client::whereIn('id', $member)->inRandomOrder()->limit(15)->get();
+        foreach ($info_members as $key => $value) {
+            $mutual = array_intersect(Client::getFriend($value['id']), Client::getFriend($request->user()->id));
+            $info_members[$key]->mutual = count($mutual);
+            $friends = [];
+
+            if (count($mutual) >= 2) {
+
+                for ($i = 0; $i < 2; $i++) {
+                    $rand  = array_rand($mutual);
+                    $infoClient = Client::find($mutual[$rand]);
+                    array_push($friends, $infoClient);
+                    unset($mutual[$rand]);
+                }
+            } else if (count($mutual) == 1) {
+                $infoClient = Client::find($mutual[array_rand($mutual)]);
+                array_push($friends, $infoClient);
+            } else {
+                $follower = DB::table('followers')
+                    ->select('my_id', DB::raw('count(my_id) as count'))
+                    ->where('my_id', $value['id'])
+                    ->groupBy('my_id')
+                    ->get();
+
+                $info_members[$key]->follower = $follower[0]->count;
+            }
+            $info_members[$key]->friends = $friends;
+        }
         return response()->json([
             'info'    => $info,
             'member'    => $info_members
+
         ]);
     }
     public function dataInviteDetail(Request $request)
