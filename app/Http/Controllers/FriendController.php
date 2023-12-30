@@ -17,12 +17,8 @@ class FriendController extends Controller
             ->union(
                 Friend::where('id_friend', $client->id)
                     ->select('my_id as result_id')
-            );
-        $all_friend = Client::joinSub($id_friends, 'friends', function ($join) {
-            $join->on('clients.id', '=', 'friends.result_id');
-        })
-            ->select('clients.*')
-            ->get();
+            )->pluck('result_id')->toArray();
+        $all_friend = Client::whereIn('id', $id_friends)->get();
         foreach ($all_friend as $key => $value) {
             $mutual = array_intersect(Client::getFriend($value['id']), Client::getFriend($client->id));
             $all_friend[$key]->mutual = count($mutual);

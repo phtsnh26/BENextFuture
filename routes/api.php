@@ -10,6 +10,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StoriesController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,9 +40,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::group(['prefix' => '/{username}'], function () {
         Route::get('/data-info', [ClientController::class, "getInfo"]);
+        Route::get('/data-all', [ProfileController::class, "dataAll"]);             // tất cả thông tin profile
     });
     Route::group(['prefix' => '/profile'], function () {
-        Route::get('/data', [ClientController::class, "getProfile"]);
+        Route::get('/data', [ClientController::class, "getProfile"]);               // thông tin tổng quát của profile
     });
 
     Route::get('/dataFull', [ClientController::class, "getAllData"]);               // những người bạn có thể biết
