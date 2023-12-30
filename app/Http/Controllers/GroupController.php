@@ -27,6 +27,14 @@ class GroupController extends Controller
         $discover = Group::whereNotIn('id', $group_participated)
             ->where('display', Group::visible)
             ->get();
+
+        foreach ($discover as $key => $value) {
+            $getMember = Connection::where('id_group', $value->id)
+                ->groupBy('id_group')
+                ->select(DB::raw('count(*) as member'))
+                ->first(); // Sử dụng first() để lấy một dòng duy nhất từ câu truy vấn
+            $discover[$key]->member = $getMember->member;
+        }
         return response()->json([
             'data' => $discover,
         ]);
@@ -489,7 +497,7 @@ class GroupController extends Controller
             $check = Follower::where('id_follower', $value['id'])->where('my_id', $client->id)->first();
             if ($check) {
                 $members[$key]->status = 1;
-            }else{
+            } else {
                 $members[$key]->status = 0;
             }
         }
@@ -557,6 +565,37 @@ class GroupController extends Controller
         }
         return response()->json([
             'data' => $members,
+        ]);
+    }
+    public function dataPopularGroup(Request $request)
+    {
+        $client = $request->user();
+        $groups = Group::whereNotIn('id', function ($query) use ($client) {
+            $query->select('id_group')
+                ->from('connections')
+                ->where('id_client', $client->id);
+        })->get();
+        foreach ($groups as $key => $value) {
+
+            $getMember = Connection::where('id_group', $value->id)
+                ->groupBy('id_group')
+                ->select(DB::raw('count(*) as member'))
+                ->first(); // Sử dụng first() để lấy một dòng duy nhất từ câu truy vấn
+            $groups[$key]->member = $getMember->member;
+
+            $connection = Connection::where('id_group', $value->id)->pluck('id_client')->toArray();
+            $mutual = array_intersect(Client::getFriend($client->id), $connection);
+
+            $groups[$key]->mutual = count($mutual);
+
+        }
+        $sortedGroups = $groups->sortByDesc('mutual')->take(6);
+
+        // Shuffle the sorted groups randomly
+        $groupRandom = $sortedGroups->shuffle();
+
+        return response()->json([
+            'dataPopular' => $groupRandom,
         ]);
     }
 }

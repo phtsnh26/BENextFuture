@@ -62,6 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => '/groups'], function () {
         Route::post('/create', [GroupController::class, 'createGroup']);                                // tạo nhóm mới
         Route::get('/data-discover', [GroupController::class, 'data_all_group']);                       // data tất cả nhóm chưa tham gia
+        Route::get('/data-popular-group', [GroupController::class, 'dataPopularGroup']);                // data random nhóm chưa tham gia
         Route::get('/data-your-group', [GroupController::class, 'data_your_group']);                    // data nhóm bạn quản lý
         Route::get('/data-group-participated', [GroupController::class, 'data_group_participated']);    // data nhóm đang tham gia không bao gồm nhóm admin
         Route::get('/data-all-group-participated', [GroupController::class, 'dataAllGroupParticipated']);  // data toàn bộ nhóm đang tham gia
