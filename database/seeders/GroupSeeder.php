@@ -72,7 +72,7 @@ class GroupSeeder extends Seeder
             ],
             [
                 'group_name'      => "Learn HTML, CSS and JavaScript",
-                'cover_image'     => "cover/cover_image.png",
+                'cover_image'     => "cover/learn_html.jpg",
                 'privacy'         => Group::private,
                 'display'         => Group::hidden,
                 'join_approval'   => true,
@@ -98,7 +98,7 @@ class GroupSeeder extends Seeder
             ],
             [
                 'group_name'      => "Cooking Enthusiasts",
-                'cover_image'     => "cover/cover_image.png",
+                'cover_image'     => "cover/cook_group.jpg",
                 'privacy'         => Group::private,
                 'display'         => Group::visible,
                 'join_approval'   => true,
@@ -130,7 +130,7 @@ class GroupSeeder extends Seeder
             ],
             [
                 'group_name'      => "Book Club",
-                'cover_image'     => "cover/cover_image.png",
+                'cover_image'     => "cover/book_group.jpg",
                 'privacy'         => Group::public,
                 'display'         => Group::visible,
                 'join_approval'   => true,
@@ -157,7 +157,7 @@ class GroupSeeder extends Seeder
             ],
             [
                 'group_name'      => "Film Buffs",
-                'cover_image'     => "cover/cover_image.png",
+                'cover_image'     => "cover/film_group.jpg",
                 'privacy'         => Group::private,
                 'display'         => Group::hidden,
                 'join_approval'   => true,
@@ -176,7 +176,7 @@ class GroupSeeder extends Seeder
             // Dòng 2
             [
                 'group_name'      => "Music Lovers",
-                'cover_image'     => "cover/cover_image.png",
+                'cover_image'     => "cover/music_group.jpg",
                 'privacy'         => Group::private,
                 'display'         => Group::visible,
                 'join_approval'   => (bool) rand(0, 1),
@@ -186,7 +186,7 @@ class GroupSeeder extends Seeder
             // Dòng 3
             [
                 'group_name'      => "Fitness Challenges",
-                'cover_image'     => "cover/cover_image.png",
+                'cover_image'     => "cover/gym_group.jpg",
                 'privacy'         => Group::public,
                 'display'         => Group::visible,
                 'join_approval'   => (bool) rand(0, 1),
