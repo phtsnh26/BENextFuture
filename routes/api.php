@@ -12,6 +12,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StoriesController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/sign-up', [ClientController::class, 'register']);
@@ -87,6 +88,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/check-role', [ConnectionController::class, 'checkRole']);                         // check giao diện
         Route::post('/check-request', [ConnectionController::class, 'checkRequest']);                   // check xem đã xin vào group này chưa
         Route::post('/undo-request', [ConnectionController::class, 'undoRequest']);                     // huỷ xin vào group
+        Route::post('/leave-group', [ConnectionController::class, 'leaveGroup']);                       // huỷ xin vào group
 
         Route::group(['prefix' => '/members'], function () {
             Route::post('/data', [GroupController::class, 'dataMember']);                               // Data tất cả member của group
@@ -107,6 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/remove-invite', [NotificationController::class, 'removeInvite']);                // Xoá lời mời vào group
 
     });
+    Route::get('/test', [TestController::class, 'test']);
 
     Route::post('/upload-file', [ImageController::class, 'upload']);
     Route::post('/upload-image', [ImageController::class, 'uploadImage']);

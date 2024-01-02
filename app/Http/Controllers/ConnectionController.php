@@ -164,4 +164,30 @@ class ConnectionController extends Controller
             ]);
         }
     }
+    public function leaveGroup(Request $request){
+        $client = $request->user();
+        try {
+            DB::beginTransaction();
+            $del = Connection::where('id_group', $request->id)->where('id_client', $client->id)->first();
+            if($del->id_role == Role::admin){
+                return response()->json([
+                    'status'    => -1,
+                    'message'   => 'Please assign admin rights to someone before you leave the group!',
+                ]);
+            }else{
+                $del->delete();
+            }
+            DB::commit();
+            return response()->json([
+                'status'    => 1,
+                'message'   => 'Leave group successfully!' . $del->status,
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Leave group failed!',
+            ]);
+        }
+    }
 }
