@@ -24,12 +24,18 @@ class FriendSeeder extends Seeder
             $idFriend = rand(1, 38);
 
             // Kiểm tra xem giá trị có tồn tại trong bảng Follower không
-            $followerExists = Follower::where('my_id', $myId)
-                ->where('id_follower', $idFriend)
+            $followerExists = Follower::where(function ($query) use ($myId, $idFriend) {
+                $query->where('my_id', $myId)
+                    ->where('id_follower', $idFriend);
+            })
+                ->orWhere(function ($query) use ($myId, $idFriend) {
+                    $query->where('my_id', $idFriend)
+                        ->where('id_follower', $myId);
+                })
                 ->exists();
 
             // Nếu giá trị không tồn tại trong bảng Follower, thêm vào bảng Friend
-            if (!$followerExists) {
+            if (!$followerExists || $myId == $idFriend) {
                 Friend::create(
                     [
                         'my_id' => $myId,

@@ -73,7 +73,6 @@ class FollowerController extends Controller
             ->where('id_follower', $client->id)
             ->Where('followers.status', Follower::friend_request)
             ->select('clients.*')
-            ->limit(5)
             ->get();
 
         foreach ($follower as $key => $value) {

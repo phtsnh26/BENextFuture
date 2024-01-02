@@ -17,18 +17,34 @@ class FollowerSeeder extends Seeder
         DB::table("followers")->delete();
         DB::table("followers")->truncate();
         for ($i = 0; $i < 500; $i++) {
-            Follower::create(
-                [
-                    'my_id' => rand(1, 38),
-                    'id_follower' => rand(1, 38),
-                    'status' => Follower::friend_request,
-                ],
-            );
+            $my_id = rand(1, 38);
+            $id_follower = rand(1, 38);
+            $check = Follower::where(function ($query) use ($my_id, $id_follower) {
+                $query->where('my_id', $my_id)
+                    ->where('id_follower', $id_follower);
+            })
+                ->orWhere(function ($query) use ($my_id, $id_follower) {
+                    $query->where('my_id', $id_follower)
+                        ->where('id_follower', $my_id);
+                })
+                ->first();
+            if ($check || $my_id == $id_follower) {
+                continue;
+            } else {
+                Follower::create(
+                    [
+                        'my_id' => $my_id,
+                        'id_follower' => $id_follower,
+                        'status' => Follower::friend_request,
+                    ],
+                );
+            }
         }
         $duplicateRecords = Follower::select('my_id', 'id_follower')
             ->groupBy('my_id', 'id_follower')
             ->havingRaw('COUNT(*) > 1')
             ->get();
+
 
         // Xoá các bản ghi trùng nhau, chỉ giữ lại một bản ghi duy nhất
         foreach ($duplicateRecords as $record) {
