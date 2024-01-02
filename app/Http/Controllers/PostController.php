@@ -27,13 +27,13 @@ class PostController extends Controller
                     $fileNames[] = 'post/'. time() . "_" . $file_name;
                 }
             }
-            $request->merge(['img' => $fileNames]);
-            $result = implode(',', $request->img);
-            $arr = $request->except('images'); // Loại bỏ key 'images' nếu nó tồn tại trong request
+            $result = json_encode($fileNames, JSON_THROW_ON_ERROR);
             $arr['images'] = $result; // Thêm key 'images' với giá trị từ $result
         } else {
             $arr = $request->all(); // Loại bỏ key 'images' nếu nó tồn tại trong request
         }
+        $arr['caption'] = $request->caption;
+        $arr['privacy'] = $request->privacy;
         $arr['id_client'] = $client->id;
         $post = Post::create($arr);
         if ($post) {
