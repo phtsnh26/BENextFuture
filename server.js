@@ -1,21 +1,30 @@
-import express from 'express'
-import http from 'http'
-import serverIO from 'socket.io'
+import { Server } from "socket.io";
 
-const app = express()
-const server = http.createServer(app)
-const io = serverIO(server)
+const io = new Server({
+    cors: {
+        origin: "http://localhost:5173",
+    }
+});
 
-io.on('connection', (socket) => {
-    console.log('New connection')
+let onlineUsers = [];
+const addNewUser = (data, socketId) => {
+    const {id} = data
+    !onlineUsers.some(user=>user.id === id) && onlineUsers.push({id, socketId})
+}
 
-    socket.on('disconnect', () => {
-        console.log('Client disconnected')
+io.on("connection", (socket) => {
+    const userAgents = socket.handshake.headers["user-agent"];
+    console.log("someone has connected using: ", userAgents);
+
+    io.emit("welcome", "Welcome to the server");
+
+    socket.on('newUser', (data) => {
+        addNewUser(data, socket.id)
+    });
+
+    socket.on("disconnect", () => {
+        console.log("someone has left the server");
     })
 })
 
-const port = process.env.PORT || 3000
-
-server.listen(port, () => {
-    console.log(`Server is up on port ${port}`)
-})
+io.listen(3001);
