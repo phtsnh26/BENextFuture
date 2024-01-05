@@ -18,7 +18,7 @@ class ClientController extends Controller
 
     public function login(Request $request)
     {
-        $user = Client::where("email", $request->username)->first();
+        $user = Client::where("email", $request->username)->orWhere('username', $request->username)->first();
 
         if ($user && Hash::check($request->password, $user->password)) {
 
