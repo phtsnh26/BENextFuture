@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Follower;
 use App\Models\Friend;
 use App\Models\Post;
+use App\Models\PostLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -62,19 +63,6 @@ class PostController extends Controller
         $followers = Follower::where('my_id', $client->id)
             ->select('id_follower')->pluck('id_follower');
 
-        // $post = DB::table('posts')
-        // ->join('clients', 'clients.id', '=', 'posts.id_client')
-        // ->select('posts.*', 'clients.username', 'clients.fullname', 'clients.avatar')
-        // ->where(function ($query) use ($friends, $id_client) {
-        //     $query->where('posts.privacy', '=', 'friend')
-        //     ->where(function ($query) use ($friends, $id_client) {
-        //         $query->whereIn('posts.id_client', $friends)
-        //         ->orWhere('posts.id_client', $id_client);
-        //     });
-        // })
-        // ->orWhere('posts.privacy', '=', 'public')
-        // ->orderBy('posts.created_at', 'desc')
-        // ->get();
         $post = Post::join('clients', 'clients.id', '=', 'posts.id_client')
             ->select('posts.*', 'clients.username', 'clients.fullname', 'clients.avatar')
             ->where(function ($query) use ($friends, $id_client) {
@@ -83,12 +71,12 @@ class PostController extends Controller
                     ->orWhere('posts.id_client', $id_client);
             })
             ->orWhere(function ($query) use ($id_client, $friends, $followers) {
-                $query->where('posts.privacy', Post::public)
-                    ->where(function ($query) use ($id_client, $friends, $followers) {
-                        $query->whereIn('posts.id_client', $friends)
-                            ->orWhereIn('posts.id_client', $followers)
-                            ->orWhere('posts.id_client', $id_client);
-                    });
+                $query->where('posts.privacy', Post::public);
+                    // ->where(function ($query) use ($id_client, $friends, $followers) {
+                    //     $query->whereIn('posts.id_client', $friends)
+                    //         ->orWhereIn('posts.id_client', $followers)
+                    //         ->orWhere('posts.id_client', $id_client);
+                    // });
             })
             ->orWhere(function ($query) use ($id_client) {
                 $query->where('posts.privacy', Post::private)
@@ -96,6 +84,16 @@ class PostController extends Controller
             })
             ->orderByDESC('posts.created_at')
             ->get();
+        foreach ($post as $key => $value) {
+            $check = PostLike::where('id_post', $value->id)->where('id_client', $client->id)->first();
+            $totalLikes = PostLike::where('id_post', $value->id)->count();
+            if ($check) {
+                $post[$key]['liked'] = 1;
+            }else{
+                $post[$key]['liked'] = 0;
+            }
+            $post[$key]['likes'] = $totalLikes;
+        }
         return response()->json([
             'status' => 1,
             'dataPost'    => $post,
