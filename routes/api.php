@@ -10,6 +10,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\PostLikeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StoriesController;
 use App\Http\Controllers\TestController;
@@ -55,6 +56,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => '/post'], function () {
         Route::post('/create', [PostController::class, "create"]);
         Route::get('/data', [PostController::class, "dataPost"]);
+
+        Route::post('/like', [PostLikeController::class, "like"]);                  // tim bài đăng
+        Route::post('/un-like', [PostLikeController::class, "unLike"]);             // huỷ tim bài đăng
     });
 
     Route::group(['prefix' => '/comment'], function () {

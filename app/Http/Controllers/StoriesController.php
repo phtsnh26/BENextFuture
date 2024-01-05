@@ -54,9 +54,9 @@ class StoriesController extends Controller
                             });
                     });
             })
-            ->limit(4)
+            ->limit(5)
             ->orderBy('stories.created_at', 'desc')
-            ->paginate(4, ['*'], 3);
+            ->paginate(5, ['*'], 3);
 
         return response()->json([
             'dataStory'    => $dataStory,
