@@ -4,7 +4,7 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "start": "concurrently \"nodemon server.js\" \"php artisan serve\""
+        "start": "nodemon server.js"
     },
     "devDependencies": {
         "axios": "^1.1.2",
