@@ -46,6 +46,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::group(['prefix' => '/profile'], function () {
         Route::get('/data', [ClientController::class, "getProfile"]);               // thông tin tổng quát của profile
+        Route::get('/accounts-edit', [ProfileController::class, "dataAccount"]);     // trang cá nhân của người đang đăng nhập
+        Route::post('/update-profile', [ProfileController::class, "updateProfile"]);     // trang cá nhân của người đang đăng nhập
     });
 
     Route::get('/dataFull', [ClientController::class, "getAllData"]);               // những người bạn có thể biết
