@@ -5,16 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Comment extends Model
+class CommentLike extends Model
 {
     use HasFactory;
-    protected $table = 'comments';
+    protected $table = 'comment_likes';
     protected $fillable = [
-        'content',
-        'likes',
-        'id_tag',
         'id_client',
-        'id_replier',
-        'id_post',
+        'id_comment',
     ];
 }
