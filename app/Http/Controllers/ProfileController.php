@@ -79,4 +79,53 @@ class ProfileController extends Controller
             'followers' => $follower
         ]);
     }
+    public function dataAccount(Request $request)
+    {
+        $myInfo = $request->user()->id;
+        $data = Client::where('id', $myInfo)
+            ->first();
+        return response()->json([
+            'data'    => $data
+        ]);
+    }
+    public function updateProfile(Request $request)
+    {
+        $avatar = $request->file('avatar');
+        if ($avatar) {
+            $path =  uniqid() . '.' . $avatar->getClientOriginalExtension();
+            $avatarPath = 'img/avatar/' . $path;
+            $avatar->move(public_path('img/avatar'), $avatarPath);
+            $avatarUrl = 'avatar/' . $path;
+        } else {
+            $avatarUrl = null;
+        }
+        $myInfo = $request->user()->id;
+        $data = Client::find($myInfo);
+
+        if ($data) {
+            if ($request->gender != $data->gender && in_array($avatarUrl ? $avatarUrl : $data->avatar, ['avatar_male.jpg', 'avatar_female.jpg', 'avatar_other.jpg'])) {
+                if ($request->gender == Client::male) {
+                    $avatarUrl = 'avatar_male.jpg';
+                } else if ($request->gender == Client::female) {
+                    $avatarUrl = 'avatar_female.jpg';
+                } else {
+                    $avatarUrl = 'avatar_other.jpg';
+                }
+            }
+
+            $data->update([
+                'phone_number' => $request->phone_number ?? $data->phone_number,
+                'fullname' => $request->fullname ?? $data->fullname,
+                'date_of_birth' => $request->date_of_birth ?? $data->date_of_birth,
+                'avatar' => $avatarUrl ?? $data->avatar,
+                'gender' => $request->gender ?? $data->gender,
+                'nickname' => $request->nickname ?? $data->nickname,
+                'address' => $request->address ?? $data->address,
+            ]);
+        }
+        return response()->json([
+            'status' => 1,
+            'message' => 'Update profile successfully'
+        ]);
+    }
 }
