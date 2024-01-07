@@ -62,8 +62,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::group(['prefix' => '/comment'], function () {
-        Route::get('/data', [CommentController::class, 'data']);
+        Route::post('/data', [CommentController::class, 'data']);
         Route::post('/create', [CommentController::class, 'store']);
+        Route::post('/like', [CommentController::class, 'like']);
+        Route::post('/un-like', [CommentController::class, 'unLike']);
     });
 
     Route::group(['prefix' => '/groups'], function () {
@@ -102,7 +104,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/search-member', [MemberController::class, 'searchMember']);              // Tìm kiếm member trong group
             Route::post('/remove-member', [MemberController::class, 'removeMember']);                   // Xóa member ra khỏi group
             Route::post('/grant-permission', [MemberController::class, 'grantPermissions']);            // cấp quyền cho member trong group
-            Route::post('/remove-permission', [MemberController::class, 'removePermissions']);          // xóa quyền cho member trong group
+        Route::post('/remove-permission', [MemberController::class, 'rmovePermissions']);          // xóa quyền cho member trong group
         });
     });
     Route::group(['prefix' => '/notification'], function () {
@@ -117,4 +119,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/upload-file', [ImageController::class, 'upload']);
     Route::post('/upload-image', [ImageController::class, 'uploadImage']);
+
 });
