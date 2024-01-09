@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Models\Follower;
 use App\Models\Friend;
+use App\Models\LinkAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -126,6 +127,58 @@ class ProfileController extends Controller
         return response()->json([
             'status' => 1,
             'message' => 'Update profile successfully'
+        ]);
+    }
+    public function dataLinkAddress($username)
+    {
+        $myInfo = Client::where('username', $username)->first();
+        $link = LinkAddress::where('id_client', $myInfo->id)
+            ->get();
+        return response()->json([
+            'data'    => $link
+        ]);
+    }
+    public function dataLinkAddressProfile(Request $request)
+    {
+        $myInfo = $request->user();
+        $link = LinkAddress::where('id_client', $myInfo->id)
+            ->get();
+        return response()->json([
+            'data'    => $link
+        ]);
+    }
+    public function updateLink(Request $request)
+    {
+        $myInfo = $request->user();
+        $links = LinkAddress::where('id_client', $myInfo->id)->get();
+        $data = $request->all();
+        foreach ($data as $key => $value) {
+            if ($key != 'status' && (isset($value['link']))) {
+                $check = -1;
+                foreach ($links as $k => $v) {
+                    if ($v['type'] == $value['type']) {
+                        $check = $v['id'];
+                        break;
+                    }
+                }
+                if ($check != -1) {
+                    LinkAddress::find($check)->update($value);
+                } else {
+                    LinkAddress::create([
+                        'id_client'     => $myInfo->id,
+                        'link'          => $value['link'],
+                        'type'          => $value['type'],
+                        'icon'          => LinkAddress::checkType($value['type']),
+                        'name'          => $value['name'],
+                    ]);
+                }
+            } else if ($key != 'status' && (!isset($value['link']))) {
+                LinkAddress::where('id_client', $myInfo->id)->where('type', $value['type'])->delete();
+            }
+        }
+        return response()->json([
+            'status'    => 1,
+            'message'   => 'Updated address link successfully',
         ]);
     }
 }

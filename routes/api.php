@@ -43,11 +43,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => '/{username}'], function () {
         Route::get('/data-info', [ClientController::class, "getInfo"]);
         Route::get('/data-all', [ProfileController::class, "dataAll"]);             // tất cả thông tin profile
+        Route::get('/data-link-address', [ProfileController::class, "dataLinkAddress"]);             // tất cả thông tin profile
     });
     Route::group(['prefix' => '/profile'], function () {
         Route::get('/data', [ClientController::class, "getProfile"]);               // thông tin tổng quát của profile
         Route::get('/accounts-edit', [ProfileController::class, "dataAccount"]);     // trang cá nhân của người đang đăng nhập
         Route::post('/update-profile', [ProfileController::class, "updateProfile"]);     // trang cá nhân của người đang đăng nhập
+        Route::post('/update-link-address', [ProfileController::class, "updateLink"]);     // trang cá nhân của người đang đăng nhập
+        Route::get('/data-address-link', [ProfileController::class, "dataLinkAddressProfile"]);             // tất cả thông tin profile
     });
 
     Route::get('/dataFull', [ClientController::class, "getAllData"]);               // những người bạn có thể biết
@@ -106,7 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/search-member', [MemberController::class, 'searchMember']);              // Tìm kiếm member trong group
             Route::post('/remove-member', [MemberController::class, 'removeMember']);                   // Xóa member ra khỏi group
             Route::post('/grant-permission', [MemberController::class, 'grantPermissions']);            // cấp quyền cho member trong group
-        Route::post('/remove-permission', [MemberController::class, 'rmovePermissions']);          // xóa quyền cho member trong group
+            Route::post('/remove-permission', [MemberController::class, 'rmovePermissions']);          // xóa quyền cho member trong group
         });
     });
     Route::group(['prefix' => '/notification'], function () {
@@ -121,5 +124,4 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/upload-file', [ImageController::class, 'upload']);
     Route::post('/upload-image', [ImageController::class, 'uploadImage']);
-
 });

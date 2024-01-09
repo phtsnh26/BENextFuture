@@ -186,7 +186,7 @@ class GroupController extends Controller
         $info = Group::find($id_group);
         $member = Connection::where('id_group', $info->id)->select('id_client')->pluck('id_client');
         $info->member = $member->count();
-        $info_members = Client::whereIn('id', $member)->inRandomOrder()->limit(15)->get();
+        $info_members = Client::whereIn('id', $member)->inRandomOrder()->limit(12)->get();
         foreach ($info_members as $key => $value) {
             $mutual = array_intersect(Client::getFriend($value['id']), Client::getFriend($request->user()->id));
             $info_members[$key]->mutual = count($mutual);
