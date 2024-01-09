@@ -491,7 +491,7 @@ class GroupController extends Controller
             ->where('clients.id', '!=', $client->id)
             ->where('connections.id_group', $request->id_group)
             ->where('id_role', Role::member)
-            ->select('clients.fullname', 'clients.avatar', 'clients.id', 'roles.role_name as role')
+            ->select('clients.fullname', 'clients.username', 'clients.avatar', 'clients.id', 'roles.role_name as role')
             ->get();
         foreach ($members as $key => $value) {
             $check = Follower::where('id_follower', $value['id'])->where('my_id', $client->id)->first();
@@ -520,7 +520,7 @@ class GroupController extends Controller
             ->leftJoin('roles', 'roles.id', 'connections.id_role')
             ->where('connections.id_group', $request->id_group)
             ->whereIn('clients.id', $friends)
-            ->select('clients.fullname', 'clients.avatar', 'clients.id', 'roles.role_name as role', 'status')
+            ->select('clients.fullname', 'clients.username', 'clients.avatar', 'clients.id', 'roles.role_name as role', 'status')
             ->get();
         return response()->json([
             'data' => $members,
@@ -532,7 +532,7 @@ class GroupController extends Controller
             ->leftJoin('roles', 'roles.id', 'connections.id_role')
             ->where('connections.id_group', $request->id_group)
             ->where('id_role', Role::admin)
-            ->select('clients.fullname', 'clients.avatar', 'clients.id', 'roles.role_name as role', 'connections.id_role')
+            ->select('clients.fullname', 'clients.username', 'clients.avatar', 'clients.id', 'roles.role_name as role', 'connections.id_role')
             ->get();
         foreach ($members as $key => $value) {
             $check = Follower::where('id_follower', $value['id'])->where('my_id', $request->user()->id)->first();
@@ -553,7 +553,7 @@ class GroupController extends Controller
             ->leftJoin('roles', 'roles.id', 'connections.id_role')
             ->whereIn('id_role', [Role::post_moderator, Role::member_moderator, Role::moderator])
             ->where('connections.id_group', $request->id_group)
-            ->select('clients.fullname', 'clients.avatar', 'clients.id', 'roles.role_name as role')
+            ->select('clients.fullname', 'clients.username', 'clients.avatar', 'clients.id', 'roles.role_name as role')
             ->get();
         foreach ($members as $key => $value) {
             $check = Follower::where('id_follower', $value['id'])->where('my_id', $request->user()->id)->first();
@@ -587,7 +587,6 @@ class GroupController extends Controller
             $mutual = array_intersect(Client::getFriend($client->id), $connection);
 
             $groups[$key]->mutual = count($mutual);
-
         }
         $sortedGroups = $groups->sortByDesc('mutual')->take(6);
 
