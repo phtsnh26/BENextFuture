@@ -16,7 +16,7 @@ class FollowerSeeder extends Seeder
     {
         DB::table("followers")->delete();
         DB::table("followers")->truncate();
-        for ($i = 0; $i < 500; $i++) {
+        for ($i = 0; $i < 400; $i++) {
             $my_id = rand(1, 38);
             $id_follower = rand(1, 38);
             $check = Follower::where(function ($query) use ($my_id, $id_follower) {
