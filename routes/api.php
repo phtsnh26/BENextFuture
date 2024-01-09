@@ -65,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::group(['prefix' => '/comment'], function () {
         Route::post('/data', [CommentController::class, 'data']);
+        Route::post('/data-reply', [CommentController::class, 'dataReply']);
         Route::post('/create', [CommentController::class, 'store']);
         Route::post('/like', [CommentController::class, 'like']);
         Route::post('/un-like', [CommentController::class, 'unLike']);

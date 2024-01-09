@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Follower;
 use App\Models\Friend;
 use App\Models\Post;
@@ -93,6 +94,8 @@ class PostController extends Controller
                 $post[$key]['liked'] = 0;
             }
             $post[$key]['likes'] = $totalLikes;
+            $comments = Comment::where('id_post', $value->id)->get();
+            $post[$key]['comments'] = count($comments);
         }
         return response()->json([
             'status' => 1,
