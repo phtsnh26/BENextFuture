@@ -22,6 +22,7 @@ class Client extends Authenticatable
         'gender',
         'nickname',
         'address',
+        
     ];
     protected $table = 'clients';
 
