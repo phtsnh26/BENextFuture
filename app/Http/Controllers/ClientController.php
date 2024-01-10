@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SignUpRequest;
 use App\Models\Client;
 use App\Models\Follower;
 use App\Models\Friend;
@@ -51,7 +52,7 @@ class ClientController extends Controller
     }
 
 
-    public function register(Request $request)
+    public function register(SignUpRequest $request)
     {
         if ($request->gender == 0) {
             $avata = "avatar_female.jpg";
