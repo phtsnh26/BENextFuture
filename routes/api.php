@@ -61,6 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => '/post'], function () {
         Route::post('/create', [PostController::class, "create"]);
         Route::get('/data', [PostController::class, "dataPost"]);
+        Route::post('/data-profile', [PostController::class, "dataProfile"]);
 
         Route::post('/like', [PostLikeController::class, "like"]);                  // tim bài đăng
         Route::post('/un-like', [PostLikeController::class, "unLike"]);             // huỷ tim bài đăng

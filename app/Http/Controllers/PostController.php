@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use App\Models\Comment;
 use App\Models\Follower;
 use App\Models\Friend;
@@ -26,7 +27,7 @@ class PostController extends Controller
                 if ($image->isValid()) {
                     $file_name = $image->getClientOriginalName();
                     $image->move(public_path('img/post'), time() . "_" . $file_name);
-                    $fileNames[] = 'post/'. time() . "_" . $file_name;
+                    $fileNames[] = 'post/' . time() . "_" . $file_name;
                 }
             }
             $result = json_encode($fileNames, JSON_THROW_ON_ERROR);
@@ -73,11 +74,6 @@ class PostController extends Controller
             })
             ->orWhere(function ($query) use ($id_client, $friends, $followers) {
                 $query->where('posts.privacy', Post::public);
-                    // ->where(function ($query) use ($id_client, $friends, $followers) {
-                    //     $query->whereIn('posts.id_client', $friends)
-                    //         ->orWhereIn('posts.id_client', $followers)
-                    //         ->orWhere('posts.id_client', $id_client);
-                    // });
             })
             ->orWhere(function ($query) use ($id_client) {
                 $query->where('posts.privacy', Post::private)
@@ -90,7 +86,7 @@ class PostController extends Controller
             $totalLikes = PostLike::where('id_post', $value->id)->count();
             if ($check) {
                 $post[$key]['liked'] = 1;
-            }else{
+            } else {
                 $post[$key]['liked'] = 0;
             }
             $post[$key]['likes'] = $totalLikes;
@@ -101,6 +97,56 @@ class PostController extends Controller
             'status' => 1,
             'dataPost'    => $post,
             'message'    => 'oke',
+        ]);
+    }
+    public function dataProfile(Request $request)
+    {
+        $client = $request->user();
+        $id_client = $client->id;
+        $friends = Friend::where('my_id', $client->id)
+            ->select('id_friend as result_id')
+            ->union(
+                Friend::where('id_friend', $client->id)
+                    ->select("my_id as result_id")
+            )
+            ->pluck('result_id');
+        $followers = Follower::where('my_id', $client->id)
+            ->select('id_follower')->pluck('id_follower');
+
+        $post = Post::join('clients', 'clients.id', '=', 'posts.id_client')
+            ->select('posts.*', 'clients.username', 'clients.fullname', 'clients.avatar')
+            ->where(function ($query) use ($friends, $id_client, $followers) {
+                $query->where(function ($query) use ($friends, $id_client) {
+                    $query->where('posts.privacy', Post::friend)
+                        ->whereIn('posts.id_client', $friends)
+                        ->orWhere('posts.id_client', $id_client);
+                })
+                    ->orWhere(function ($query) use ($id_client, $friends, $followers) {
+                        $query->where('posts.privacy', Post::public);
+                    })
+                    ->orWhere(function ($query) use ($id_client) {
+                        $query->where('posts.privacy', Post::private)
+                            ->where('posts.id_client', $id_client);
+                    });
+            })
+            ->where('username', $request->username)
+            ->orderByDESC('posts.created_at')
+            ->get();
+        foreach ($post as $key => $value) {
+            $check = PostLike::where('id_post', $value->id)->where('id_client', $client->id)->first();
+            $totalLikes = PostLike::where('id_post', $value->id)->count();
+            if ($check) {
+                $post[$key]['liked'] = 1;
+            } else {
+                $post[$key]['liked'] = 0;
+            }
+            $post[$key]['likes'] = $totalLikes;
+            $comments = Comment::where('id_post', $value->id)->get();
+            $post[$key]['comments'] = count($comments);
+        }
+        return response()->json([
+            'status' => 6,
+            'dataPost'    => $post,
         ]);
     }
 }
