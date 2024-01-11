@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::group(['prefix' => '/{username}'], function () {
+        Route::get('/data-about-me', [ProfileController::class, "getAboutMe"]);      //thông tin about me theo username
         Route::get('/data-info', [ClientController::class, "getInfo"]);
         Route::get('/data-all', [ProfileController::class, "dataAll"]);             // tất cả thông tin profile
         Route::get('/data-link-address', [ProfileController::class, "dataLinkAddress"]);             // tất cả thông tin profile
