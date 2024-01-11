@@ -416,8 +416,8 @@ class ClientSeeder extends Seeder
                 'avatar'         => 'avatar/659ce8dc2fb2d.jpg',
                 'status'         => '1',
                 'gender'         => Client::female,
-                'nickname'       => 'An Lã',
-                'address'        => '777 Can Tho',
+                'nickname'       => 'skuukzky',
+                'address'        => '7zzzssss77 Can Tho',
                 'date_of_birth'  => '1992-07-18',
             ],
             [
