@@ -11,6 +11,18 @@ use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
 {
+    public function getAboutMe($username)
+    {
+        $info = Client::where('username', $username)->first();
+        $data = Client::find($info->id);
+        $link_address = LinkAddress::leftJoin('clients', 'link_addresses.id_client', 'clients.id')
+            ->where('id_client', $info->id)
+            ->get();
+        return response()->json([
+            'data' => $data,
+            'link_address' => $link_address
+        ]);
+    }
     public function dataAll(Request $request, $username)
     {
         $info = Client::where('username', $username)->first();
@@ -122,6 +134,7 @@ class ProfileController extends Controller
                 'gender' => $request->gender ?? $data->gender,
                 'nickname' => $request->nickname ?? $data->nickname,
                 'address' => $request->address ?? $data->address,
+                'bio' => $request->bio ?? $data->bio,
             ]);
         }
         return response()->json([
