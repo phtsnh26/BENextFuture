@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
 {
+    public function data($username){
+        $myData = Client::where('username', $username)->first();
+        return response()->json([
+            'myData'   => $myData,
+        ]);
+    }
     public function getAboutMe($username)
     {
         $info = Client::where('username', $username)->first();

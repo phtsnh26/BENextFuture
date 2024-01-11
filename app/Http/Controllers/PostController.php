@@ -144,9 +144,12 @@ class PostController extends Controller
             $comments = Comment::where('id_post', $value->id)->get();
             $post[$key]['comments'] = count($comments);
         }
+        $poster = Client::where('username', $request->username)->first();
+        $quatity = Post::where('id_client', $poster->id)->count();
         return response()->json([
             'status' => 6,
             'dataPost'    => $post,
+            'quatity'    => $quatity,
         ]);
     }
 }
