@@ -6,12 +6,15 @@ use App\Models\Client;
 use App\Models\Follower;
 use App\Models\Friend;
 use App\Models\LinkAddress;
+use App\Models\Post;
+use App\Models\PostLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
 {
-    public function data($username){
+    public function data($username)
+    {
         $myData = Client::where('username', $username)->first();
         return response()->json([
             'myData'   => $myData,
@@ -198,6 +201,47 @@ class ProfileController extends Controller
         return response()->json([
             'status'    => 1,
             'message'   => 'Updated address link successfully',
+        ]);
+    }
+    public function dataPhotos($username, Request $request)
+    {
+        $client = $request->user();
+        $info = Client::where('username', $username)->first();
+        $id_client = $client->id;
+        $friends = Friend::where('my_id', $client->id)
+            ->select('id_friend as result_id')
+            ->union(
+                Friend::where('id_friend', $client->id)
+                    ->select("my_id as result_id")
+            )
+            ->pluck('result_id');
+        $dataPhotos = Post::leftJoin('clients', 'clients.id', 'posts.id_client')
+            ->select('posts.*', 'clients.username', 'clients.fullname', 'clients.avatar')
+            ->where('id_client', $info->id)
+            ->where('images', '!=', null)
+            ->where(function ($query) use ($friends, $id_client) {
+                $query->where(function ($query) use ($friends, $id_client) {
+                    $query->where('posts.privacy', Post::friend)
+                        ->whereIn('posts.id_client', $friends)
+                        ->orWhere('posts.id_client', $id_client);
+                })
+                    ->orWhere(function ($query) use ($id_client, $friends) {
+                        $query->where('posts.privacy', Post::public);
+                    })
+                    ->orWhere(function ($query) use ($id_client) {
+                        $query->where('posts.privacy', Post::private)
+                            ->where('posts.id_client', $id_client);
+                    });
+            })
+
+            ->orderByDESC('posts.created_at')
+            ->get();
+        foreach ($dataPhotos as $key => $value) {
+            $totalLikes = PostLike::where('id_post', $value->id)->count();
+            $dataPhotos[$key]['likes'] = $totalLikes;
+        }
+        return response()->json([
+            'dataPhotos'    => $dataPhotos,
         ]);
     }
 }
