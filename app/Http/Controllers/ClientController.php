@@ -67,6 +67,7 @@ class ClientController extends Controller
             'email' => $request->email,
             'phone_number' => $request->phone_number,
             'fullname' => $request->fullname,
+            'nick_name' => $request->username,
             'date_of_birth' => $request->date_of_birth,
             'gender' => $request->gender,
             'avatar' => $avata,

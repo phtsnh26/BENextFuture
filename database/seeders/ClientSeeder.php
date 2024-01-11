@@ -417,7 +417,7 @@ class ClientSeeder extends Seeder
                 'status'         => '1',
                 'gender'         => Client::female,
                 'nickname'       => 'skuukzky',
-                'address'        => '7zzzssss77 Can Tho',
+                'address'        => 'Seoul',
                 'date_of_birth'  => '1992-07-18',
             ],
             [
