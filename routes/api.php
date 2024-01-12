@@ -10,6 +10,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\PostGroupController;
 use App\Http\Controllers\PostLikeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StoriesController;
@@ -115,6 +116,10 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/remove-member', [MemberController::class, 'removeMember']);                   // Xóa member ra khỏi group
             Route::post('/grant-permission', [MemberController::class, 'grantPermissions']);            // cấp quyền cho member trong group
             Route::post('/remove-permission', [MemberController::class, 'rmovePermissions']);          // xóa quyền cho member trong group
+        });
+
+        Route::group(['prefix' => '/post'], function () {
+            Route::post('/create', [PostGroupController::class, 'store']);
         });
     });
     Route::group(['prefix' => '/notification'], function () {
