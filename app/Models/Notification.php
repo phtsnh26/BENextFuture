@@ -10,8 +10,8 @@ class Notification extends Model
     use HasFactory;
     protected $table = 'notifications';
     protected $fillable = [
-        'id_client',
-        'my_id',
+        'id_client',            // người nhận
+        'my_id',                // người tạo ra thông báo
         'id_group',
         'id_post',
         'type',
