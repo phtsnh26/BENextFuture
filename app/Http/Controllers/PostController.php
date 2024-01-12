@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-
     public function create(Request $request)
     {
         $client = $request->user('');
@@ -99,5 +98,42 @@ class PostController extends Controller
             'dataPost'    => $post,
             'message'    => 'oke',
         ]);
+    }
+    public function getAllPosts(Request $request){
+        $posts = Post::join('clients', 'clients.id', '=', 'posts.id_client')
+            ->leftJoin('post_likes', 'post_likes.id_post', '=', 'posts.id')
+            ->leftJoin('comments', 'comments.id_post', '=', 'posts.id')
+            ->select('posts.id', 'clients.fullname', 'clients.avatar', 'posts.images', 'posts.created_at', 'posts.caption', 
+                DB::raw('COUNT(DISTINCT post_likes.id) as react'),
+                DB::raw('COUNT(DISTINCT comments.id) as comment'),
+                'posts.privacy')
+            ->groupBy('posts.id', 'clients.fullname', 'clients.avatar', 'posts.images', 'posts.created_at', 'posts.caption', 'posts.privacy')
+            ->orderByDesc('posts.created_at')
+            ->get()
+            ->toArray();
+        // Parse the images field
+        foreach ($posts as &$post) {
+            $post['images'] = json_decode($post['images']);
+        }
+        return response()->json([
+            'status' => 1,
+            'data' => $posts,
+            'message' => 'oke',
+        ]);
+    }
+    public function deletePost(Request $request){
+        $post = Post::find($request->id);
+        if ($post) {
+            $post->update(['privacy' => 2]);
+            return response()->json([
+                'status' => 1,
+                'message' => 'Post privacy updated successfully!',
+            ]);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Update error!',
+            ]);
+        }
     }
 }

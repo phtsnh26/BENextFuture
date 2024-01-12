@@ -28,8 +28,10 @@ class Client extends Authenticatable
     const male = 1;
     const female = 0;
     const other = -1;
+
     const account = 1;
-    const lock_account = -1;
+    const banned_account = 0;
+    
     public static function getFriend($id)
     {
         $result = Friend::select('id_friend as id_client')

@@ -49,8 +49,6 @@ class ClientController extends Controller
             'message' => 'Invalid login information',
         ]);
     }
-
-
     public function register(Request $request)
     {
         if ($request->gender == 0) {
@@ -82,7 +80,6 @@ class ClientController extends Controller
             ]);
         }
     }
-
     public function signOut(Request $request)
     {
         $client = $request->user();
@@ -94,14 +91,6 @@ class ClientController extends Controller
             return response()->json(['status' => 0]);
         }
     }
-    public function getData()
-    {
-        $data = Client::all();
-        return response()->json([
-            'data' => $data,
-        ]);
-    }
-
     public function getAllData(Request $request)
     {
         $client = $request->user();
@@ -223,11 +212,9 @@ class ClientController extends Controller
             }
         }
     }
-
     public function authorization(Request $request): \Illuminate\Http\JsonResponse
     {
         $token = $request->bearerToken();
-
         if (!$token) {
             return response()->json(['message' => 'Token is missing'], 401);
         }
