@@ -19,7 +19,9 @@ class Post extends Model
         'id_tag',
         'privacy'
     ];
+    const deleted = 0;
     const public = 1;
     const friend = 2;
+    // const only_me = 3;
     const private = 4;
 }

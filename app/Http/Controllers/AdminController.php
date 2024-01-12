@@ -35,7 +35,7 @@ class AdminController extends Controller
     public function deletePost(Request $request){
         $post = Post::find($request->id);
         if ($post) {
-            $post->update(['privacy' => 2]);
+            $post->update(['privacy' => 0]);
             return response()->json([
                 'status' => 1,
                 'message' => 'Post privacy updated successfully!',
