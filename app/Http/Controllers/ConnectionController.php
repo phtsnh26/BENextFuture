@@ -130,7 +130,7 @@ class ConnectionController extends Controller
             ->first();
         if ($check && $check->status == RequestGroup::come) {
             return response()->json([
-                'check'    => 1,
+                'check'    => 1, 
             ]);
         } else {
             if (!$check) {
