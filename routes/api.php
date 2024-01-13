@@ -120,6 +120,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::group(['prefix' => '/post'], function () {
             Route::post('/create', [PostGroupController::class, 'store']);
+            Route::post('/data', [PostGroupController::class, 'data']);                                 // lấy danh sách bài cần duyệt
+            Route::post('/approve', [PostGroupController::class, 'approve']);                           // duyệt bài
+            Route::post('/approve-select', [PostGroupController::class, 'approveSelect']);              // duyệt bài được chọn
+            Route::post('/refuse', [PostGroupController::class, 'refuse']);                             // từ chối bài
+            Route::post('/refuse-select', [PostGroupController::class, 'refuseSelect']);                // từ chối bài được chọn
         });
     });
     Route::group(['prefix' => '/notification'], function () {

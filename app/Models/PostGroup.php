@@ -18,4 +18,6 @@ class PostGroup extends Model
         'id_group',
         'id_tag',
     ];
+    const APPROVED = 1;
+    const PENDING = 0;
 }
