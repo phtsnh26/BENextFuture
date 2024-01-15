@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SignUpRequest;
 use App\Models\Client;
 use App\Models\Follower;
 use App\Models\Friend;
@@ -49,7 +50,9 @@ class ClientController extends Controller
             'message' => 'Invalid login information',
         ]);
     }
-    public function register(Request $request)
+
+
+    public function register(SignUpRequest $request)
     {
         if ($request->gender == 0) {
             $avata = "avatar_female.jpg";
@@ -64,6 +67,7 @@ class ClientController extends Controller
             'email' => $request->email,
             'phone_number' => $request->phone_number,
             'fullname' => $request->fullname,
+            'nick_name' => $request->username,
             'date_of_birth' => $request->date_of_birth,
             'gender' => $request->gender,
             'avatar' => $avata,
@@ -230,4 +234,6 @@ class ClientController extends Controller
             'status' => false
         ], 200);
     }
+
+
 }

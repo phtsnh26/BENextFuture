@@ -14,7 +14,7 @@ class CommentController extends Controller
 
     public function data(Request $request)
     {
-        $data = Comment::select('comments.*', 'clients.fullname', 'clients.avatar', DB::raw('COUNT(comment_likes.id) as likes'))
+        $data = Comment::select('comments.*', 'clients.fullname', 'clients.avatar', 'clients.username', DB::raw('COUNT(comment_likes.id) as likes'))
             ->leftJoin('clients', 'clients.id', '=', 'comments.id_client')
             ->leftJoin('comment_likes', 'comment_likes.id_comment', '=', 'comments.id')
             ->where('comments.id_post', '=', $request->id)
@@ -28,6 +28,7 @@ class CommentController extends Controller
                 'comments.id_post',
                 'clients.fullname',
                 'clients.avatar',
+                'clients.username',
                 'comments.created_at',
                 'comments.updated_at'
             )
@@ -41,7 +42,13 @@ class CommentController extends Controller
             } else {
                 $data[$key]->liked = 0;
             }
+            $rep = Comment::where('id_replier', $value->id)->get();
+            $data[$key]->replies = count($rep);
         }
+        // $rep = Comment::select('id_replier', DB::raw('COUNT(*) as rep'))
+        //     ->where('id_replier', '!=', null)
+        //     ->groupBy('id_replier');
+
         return response()->json([
             'dataComment'    => $data,
         ]);
@@ -110,6 +117,40 @@ class CommentController extends Controller
         return response()->json([
             'status'    => 0,
             'message'   => 'Fail to unlike!',
+        ]);
+    }
+    public function dataReply(Request $request)
+    {
+        $data = Comment::where('id_replier', $request->id)
+            ->leftJoin('clients', 'clients.id', 'comments.id_client')
+            ->leftJoin('comment_likes', 'comment_likes.id_comment', '=', 'comments.id')
+            ->select('comments.*', 'clients.fullname', 'clients.avatar', 'clients.username', DB::raw('COUNT(comment_likes.id) as likes'))
+            ->orderByDESC('comments.created_at')
+            ->groupBy(
+                'comments.id',
+                'comments.content',
+                'comments.likes',
+                'comments.id_tag',
+                'comments.id_client',
+                'comments.id_replier',
+                'comments.id_post',
+                'clients.fullname',
+                'clients.avatar',
+                'clients.username',
+                'comments.created_at',
+                'comments.updated_at'
+            )
+            ->get();
+        foreach ($data as $key => $value) {
+            $check = CommentLike::where('id_comment', $value->id)->where('id_client', $request->user()->id)->first();
+            if ($check) {
+                $data[$key]->liked = 1;
+            } else {
+                $data[$key]->liked = 0;
+            }
+        }
+        return response()->json([
+            'dataReply'    => $data,
         ]);
     }
 }

@@ -19,7 +19,7 @@ class FriendSeeder extends Seeder
         DB::table("friends")->delete();
 
         // Thêm dữ liệu vào bảng Friend
-        for ($i = 0; $i < 300; $i++) {
+        for ($i = 0; $i < 400; $i++) {
             $myId = rand(1, 38);
             $idFriend = rand(1, 38);
 
@@ -35,7 +35,7 @@ class FriendSeeder extends Seeder
                 ->exists();
 
             // Nếu giá trị không tồn tại trong bảng Follower, thêm vào bảng Friend
-            if (!$followerExists || $myId == $idFriend) {
+            if (!$followerExists && $myId != $idFriend) {
                 Friend::create(
                     [
                         'my_id' => $myId,

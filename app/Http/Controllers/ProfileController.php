@@ -5,11 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Models\Follower;
 use App\Models\Friend;
+use App\Models\LinkAddress;
+use App\Models\Post;
+use App\Models\PostLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
 {
+    public function data($username)
+    {
+        $myData = Client::where('username', $username)->first();
+        return response()->json([
+            'myData'   => $myData,
+        ]);
+    }
+    public function getAboutMe($username)
+    {
+        $info = Client::where('username', $username)->first();
+        $data = Client::find($info->id);
+        $link_address = LinkAddress::leftJoin('clients', 'link_addresses.id_client', 'clients.id')
+            ->where('id_client', $info->id)
+            ->get();
+        return response()->json([
+            'data' => $data,
+            'link_address' => $link_address
+        ]);
+    }
     public function dataAll(Request $request, $username)
     {
         $info = Client::where('username', $username)->first();
@@ -121,11 +143,105 @@ class ProfileController extends Controller
                 'gender' => $request->gender ?? $data->gender,
                 'nickname' => $request->nickname ?? $data->nickname,
                 'address' => $request->address ?? $data->address,
+                'bio' => $request->bio ?? $data->bio,
             ]);
         }
         return response()->json([
             'status' => 1,
             'message' => 'Update profile successfully'
+        ]);
+    }
+    public function dataLinkAddress($username)
+    {
+        $myInfo = Client::where('username', $username)->first();
+        $link = LinkAddress::where('id_client', $myInfo->id)
+            ->get();
+        return response()->json([
+            'data'    => $link
+        ]);
+    }
+    public function dataLinkAddressProfile(Request $request)
+    {
+        $myInfo = $request->user();
+        $link = LinkAddress::where('id_client', $myInfo->id)
+            ->get();
+        return response()->json([
+            'data'    => $link
+        ]);
+    }
+    public function updateLink(Request $request)
+    {
+        $myInfo = $request->user();
+        $links = LinkAddress::where('id_client', $myInfo->id)->get();
+        $data = $request->all();
+        foreach ($data as $key => $value) {
+            if ($key != 'status' && (isset($value['link']))) {
+                $check = -1;
+                foreach ($links as $k => $v) {
+                    if ($v['type'] == $value['type']) {
+                        $check = $v['id'];
+                        break;
+                    }
+                }
+                if ($check != -1) {
+                    LinkAddress::find($check)->update($value);
+                } else {
+                    LinkAddress::create([
+                        'id_client'     => $myInfo->id,
+                        'link'          => $value['link'],
+                        'type'          => $value['type'],
+                        'icon'          => LinkAddress::checkType($value['type']),
+                        'name'          => $value['name'],
+                    ]);
+                }
+            } else if ($key != 'status' && (!isset($value['link']))) {
+                LinkAddress::where('id_client', $myInfo->id)->where('type', $value['type'])->delete();
+            }
+        }
+        return response()->json([
+            'status'    => 1,
+            'message'   => 'Updated address link successfully',
+        ]);
+    }
+    public function dataPhotos($username, Request $request)
+    {
+        $client = $request->user();
+        $info = Client::where('username', $username)->first();
+        $id_client = $client->id;
+        $friends = Friend::where('my_id', $client->id)
+            ->select('id_friend as result_id')
+            ->union(
+                Friend::where('id_friend', $client->id)
+                    ->select("my_id as result_id")
+            )
+            ->pluck('result_id');
+        $dataPhotos = Post::leftJoin('clients', 'clients.id', 'posts.id_client')
+            ->select('posts.*', 'clients.username', 'clients.fullname', 'clients.avatar')
+            ->where('id_client', $info->id)
+            ->where('images', '!=', null)
+            ->where(function ($query) use ($friends, $id_client) {
+                $query->where(function ($query) use ($friends, $id_client) {
+                    $query->where('posts.privacy', Post::friend)
+                        ->whereIn('posts.id_client', $friends)
+                        ->orWhere('posts.id_client', $id_client);
+                })
+                    ->orWhere(function ($query) use ($id_client, $friends) {
+                        $query->where('posts.privacy', Post::public);
+                    })
+                    ->orWhere(function ($query) use ($id_client) {
+                        $query->where('posts.privacy', Post::private)
+                            ->where('posts.id_client', $id_client);
+                    });
+            })
+
+            ->orderByDESC('posts.created_at')
+            ->get();
+        foreach ($dataPhotos as $key => $value) {
+            $totalLikes = PostLike::where('id_post', $value->id)->count();
+            $dataPhotos[$key]['likes'] = $totalLikes;
+        }
+        return response()->json([
+            'dataPhotos'    => $dataPhotos,
         ]);
     }
 }

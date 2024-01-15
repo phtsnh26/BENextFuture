@@ -21,9 +21,10 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->string('avatar')->nullable();
             $table->integer('status')->default(1);
-            $table->integer('gender')->nullable();
+            $table->integer('gender');
             $table->string('nickname')->nullable();
             $table->string('address')->nullable();
+            $table->text('bio')->nullable();
             $table->timestamps();
         });
     }

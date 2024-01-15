@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
+use App\Models\Comment;
 use App\Models\Follower;
 use App\Models\Friend;
 use App\Models\Post;
@@ -24,7 +26,7 @@ class PostController extends Controller
                 if ($image->isValid()) {
                     $file_name = $image->getClientOriginalName();
                     $image->move(public_path('img/post'), time() . "_" . $file_name);
-                    $fileNames[] = 'post/'. time() . "_" . $file_name;
+                    $fileNames[] = 'post/' . time() . "_" . $file_name;
                 }
             }
             $result = json_encode($fileNames, JSON_THROW_ON_ERROR);
@@ -71,11 +73,6 @@ class PostController extends Controller
             })
             ->orWhere(function ($query) use ($id_client, $friends, $followers) {
                 $query->where('posts.privacy', Post::public);
-                    // ->where(function ($query) use ($id_client, $friends, $followers) {
-                    //     $query->whereIn('posts.id_client', $friends)
-                    //         ->orWhereIn('posts.id_client', $followers)
-                    //         ->orWhere('posts.id_client', $id_client);
-                    // });
             })
             ->orWhere(function ($query) use ($id_client) {
                 $query->where('posts.privacy', Post::private)
@@ -88,52 +85,17 @@ class PostController extends Controller
             $totalLikes = PostLike::where('id_post', $value->id)->count();
             if ($check) {
                 $post[$key]['liked'] = 1;
-            }else{
+            } else {
                 $post[$key]['liked'] = 0;
             }
             $post[$key]['likes'] = $totalLikes;
+            $comments = Comment::where('id_post', $value->id)->get();
+            $post[$key]['comments'] = count($comments);
         }
         return response()->json([
             'status' => 1,
             'dataPost'    => $post,
             'message'    => 'oke',
         ]);
-    }
-    public function getAllPosts(Request $request){
-        $posts = Post::join('clients', 'clients.id', '=', 'posts.id_client')
-            ->leftJoin('post_likes', 'post_likes.id_post', '=', 'posts.id')
-            ->leftJoin('comments', 'comments.id_post', '=', 'posts.id')
-            ->select('posts.id', 'clients.fullname', 'clients.avatar', 'posts.images', 'posts.created_at', 'posts.caption', 
-                DB::raw('COUNT(DISTINCT post_likes.id) as react'),
-                DB::raw('COUNT(DISTINCT comments.id) as comment'),
-                'posts.privacy')
-            ->groupBy('posts.id', 'clients.fullname', 'clients.avatar', 'posts.images', 'posts.created_at', 'posts.caption', 'posts.privacy')
-            ->orderByDesc('posts.created_at')
-            ->get()
-            ->toArray();
-        // Parse the images field
-        foreach ($posts as &$post) {
-            $post['images'] = json_decode($post['images']);
-        }
-        return response()->json([
-            'status' => 1,
-            'data' => $posts,
-            'message' => 'oke',
-        ]);
-    }
-    public function deletePost(Request $request){
-        $post = Post::find($request->id);
-        if ($post) {
-            $post->update(['privacy' => 2]);
-            return response()->json([
-                'status' => 1,
-                'message' => 'Post privacy updated successfully!',
-            ]);
-        } else {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Update error!',
-            ]);
-        }
     }
 }
