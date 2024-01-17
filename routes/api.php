@@ -9,6 +9,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OverViewController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostGroupController;
 use App\Http\Controllers\PostLikeController;
@@ -96,6 +97,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/current-group', [GroupController::class, 'getData']);                             // lấy thông tin nhóm hiện tại thông qua id
         Route::post('/update-privacy', [GroupController::class, 'updatePrivacy']);                      // cập nhật quyền riêng tư nhóm
         Route::post('/update-display', [GroupController::class, 'updateDisplay']);                      // cập nhật quyền hiển thị nhóm
+        Route::post('/rename-group', [GroupController::class, 'renameGroup']);                          // cập nhật tên nhóm
         Route::post('/update-join-approval', [GroupController::class, 'updateJoinApproval']);           // cập nhật duyệt vào nhóm
         Route::post('/update-post-approval', [GroupController::class, 'updatePostApproval']);           // cập nhật duyệt đăng bài
         Route::post('/approve-connection', [ConnectionController::class, 'approveConnection']);             // phê duyệt lời mời từ Request_Group vào Connection
@@ -116,6 +118,11 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/remove-member', [MemberController::class, 'removeMember']);                   // Xóa member ra khỏi group
             Route::post('/grant-permission', [MemberController::class, 'grantPermissions']);            // cấp quyền cho member trong group
             Route::post('/remove-permission', [MemberController::class, 'rmovePermissions']);          // xóa quyền cho member trong group
+        });
+
+        Route::group(['prefix' => '/overview'], function () {
+            Route::post('data-overview', [OverViewController::class, 'dataOverview']);
+            Route::post('/overview-request-group', [OverViewController::class, 'request_group_overview']);
         });
 
         Route::group(['prefix' => '/post'], function () {
