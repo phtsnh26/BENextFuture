@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CommentGroupController;
 use App\Http\Controllers\ConnectionController;
 use App\Http\Controllers\FollowerController;
 use App\Http\Controllers\FriendController;
@@ -23,6 +24,8 @@ Route::post('/sign-in', [ClientController::class, 'login']);
 Route::get('/authorization', [ClientController::class, 'authorization']);
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/search', [ClientController::class, 'search']);
 
     Route::get('/sign-out', [ClientController::class, 'signOut']);
 
@@ -128,10 +131,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::group(['prefix' => '/post'], function () {
             Route::post('/create', [PostGroupController::class, 'store']);
             Route::post('/data', [PostGroupController::class, 'data']);                                 // lấy danh sách bài cần duyệt
+            Route::post('/data-approve', [PostGroupController::class, 'dataApprove']);                  // lấy danh sách bài cần duyệt
             Route::post('/approve', [PostGroupController::class, 'approve']);                           // duyệt bài
             Route::post('/approve-select', [PostGroupController::class, 'approveSelect']);              // duyệt bài được chọn
             Route::post('/refuse', [PostGroupController::class, 'refuse']);                             // từ chối bài
             Route::post('/refuse-select', [PostGroupController::class, 'refuseSelect']);                // từ chối bài được chọn
+            Route::post('/like', [PostGroupController::class, 'like']);                                 // like bài
+            Route::post('/un-like', [PostGroupController::class, 'unLike']);                            // huỷ like bài
+        });
+
+        Route::group(['prefix' => '/comment'], function () {
+            Route::post('/data', [CommentGroupController::class, 'data']);
+            Route::post('/data-reply', [CommentGroupController::class, 'dataReply']);
+            Route::post('/create', [CommentGroupController::class, 'store']);
+            Route::post('/like', [CommentGroupController::class, 'like']);
+            Route::post('/un-like', [CommentGroupController::class, 'unLike']);
         });
     });
     Route::group(['prefix' => '/notification'], function () {

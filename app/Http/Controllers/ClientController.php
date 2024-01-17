@@ -245,6 +245,20 @@ class ClientController extends Controller
             'status' => false
         ], 200);
     }
-
-
+    public function search(Request $request)
+    {
+        $client = $request->user();
+        $keySearch = '%' . $request->keySearch . '%';
+        $data = Client::where(function ($query) use ($keySearch) {
+            $query->where('username', 'like', $keySearch)
+                ->orWhere('fullname', 'like', $keySearch)
+                ->orWhere('nickname', 'like', $keySearch);
+        })
+            ->where('id', '!=', $client->id)
+            ->limit(5)
+            ->get();
+        return response()->json([
+            'dataSearch' => $data
+        ]);
+    }
 }
