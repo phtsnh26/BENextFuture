@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CommentGroup;
 use App\Models\Group;
 use App\Models\PostGroup;
+use App\Models\PostGroupLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -68,7 +70,7 @@ class PostGroupController extends Controller
             ]);
         }
     }
-    public function data(Request $request)
+    public function dataApprove(Request $request)
     {
         $listPost = PostGroup::leftJoin('clients', 'clients.id', 'post_groups.id_client')
             ->where('id_group', $request->id)
@@ -76,6 +78,30 @@ class PostGroupController extends Controller
             ->orderByDESC('post_groups.created_at')
             ->select('post_groups.*', 'clients.fullname', 'clients.username', 'clients.avatar')
             ->get();
+        return response()->json([
+            'listPost'    => $listPost,
+        ]);
+    }
+    public function data(Request $request)
+    {
+        $listPost = PostGroup::leftJoin('clients', 'clients.id', 'post_groups.id_client')
+            ->where('post_groups.status', PostGroup::APPROVED)
+            ->orderByDESC('post_groups.created_at')
+            ->where('id_group', $request->id)
+            ->select('post_groups.*', 'clients.fullname', 'clients.username', 'clients.avatar')
+            ->get();
+        foreach ($listPost as $key => $value) {
+            $check = PostGroupLike::where('id_post', $value->id)->where('id_client', $request->user()->id)->first();
+            $totalLikes = PostGroupLike::where('id_post', $value->id)->count();
+            if ($check) {
+                $listPost[$key]['liked'] = 1;
+            } else {
+                $listPost[$key]['liked'] = 0;
+            }
+            $listPost[$key]['likes'] = $totalLikes;
+            $comments = CommentGroup::where('id_post', $value->id)->get();
+            $listPost[$key]['comments'] = count($comments);
+        }
         return response()->json([
             'listPost'    => $listPost,
         ]);
@@ -133,6 +159,32 @@ class PostGroupController extends Controller
         return response()->json([
             'status'    => 1,
             'message'   => 'Refused!',
+        ]);
+    }
+    public function like(Request $request)
+    {
+        $check = PostGroupLike::create([
+            'id_post' => $request->id,
+            'id_client' => $request->user()->id,
+        ]);
+        if ($check) {
+            return response()->json([
+                'status'    => 1,
+                'message'   => 'Liked!',
+            ]);
+        } else {
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Fail to like!',
+            ]);
+        }
+    }
+    public function unLike(Request $request)
+    {
+        PostGroupLike::where('id_client', $request->user()->id)->where('id_post', $request->id)->delete();
+        return response()->json([
+            'status'    => 1,
+            'message'   => 'oke!',
         ]);
     }
 }
