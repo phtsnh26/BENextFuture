@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CommentController;
@@ -161,6 +162,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/remove-invite', [NotificationController::class, 'removeInvite']);                // Xoá lời mời vào group
 
     });
+    Route::group(['prefix' => '/admin'], function () {
+        Route::group(['prefix' => '/post'], function(){
+            Route::get('/getAllPosts', [AdminController::class, "getAllPosts"]);            // tất cả bài đăng
+            Route::post('/deletePost', [AdminController::class, "deletePost"]);             // xóa bài đăng
+        });
+        Route::group(['prefix' => '/account'], function(){
+            Route::get('/getAllAccounts', [AdminController::class, "getAllAccounts"]);            // tất cả nhóm
+            Route::post('/banAccount', [AdminController::class, "banAccount"]);             // xóa nhóm
+        });
+    });
+    
     Route::get('/test', [TestController::class, 'test']);
 
     Route::post('/upload-file', [ImageController::class, 'upload']);

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
 {
+
     public function signOut(Request $request)
     {
         $client = $request->user();
@@ -159,6 +160,7 @@ class ClientController extends Controller
             }
         }
     }
+
     public function search(Request $request)
     {
         $client = $request->user();
@@ -178,7 +180,6 @@ class ClientController extends Controller
     public function authorization(Request $request): \Illuminate\Http\JsonResponse
     {
         $token = $request->bearerToken();
-
         if (!$token) {
             return response()->json(['message' => 'Token is missing'], 401);
         }

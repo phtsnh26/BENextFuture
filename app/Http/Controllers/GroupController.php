@@ -617,6 +617,7 @@ class GroupController extends Controller
             'dataPopular' => $groupRandom,
         ]);
     }
+
     public function renameGroup(Request $request)
     {
         $group = Group::find($request->id_group);
