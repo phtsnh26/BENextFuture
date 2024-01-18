@@ -21,7 +21,7 @@ class PostController extends Controller
 
         if ($request->hasFile('images') && count($request->images) > 0) {
             $images = $request->file('images');
-            $fileNames = []; 
+            $fileNames = [];
             foreach ($images as $image) {
                 if ($image->isValid()) {
                     $file_name = $image->getClientOriginalName();
@@ -96,6 +96,59 @@ class PostController extends Controller
             'status' => 1,
             'dataPost'    => $post,
             'message'    => 'oke',
+        ]);
+    }
+    public function dataProfile(Request $request)
+    {
+        $client = $request->user();
+        $id_client = $client->id;
+        $friends = Friend::where('my_id', $client->id)
+            ->select('id_friend as result_id')
+            ->union(
+                Friend::where('id_friend', $client->id)
+                    ->select("my_id as result_id")
+            )
+            ->pluck('result_id');
+        $followers = Follower::where('my_id', $client->id)
+            ->select('id_follower')->pluck('id_follower');
+
+        $post = Post::join('clients', 'clients.id', '=', 'posts.id_client')
+            ->select('posts.*', 'clients.username', 'clients.fullname', 'clients.avatar')
+            ->where(function ($query) use ($friends, $id_client, $followers) {
+                $query->where(function ($query) use ($friends, $id_client) {
+                    $query->where('posts.privacy', Post::friend)
+                        ->whereIn('posts.id_client', $friends)
+                        ->orWhere('posts.id_client', $id_client);
+                })
+                    ->orWhere(function ($query) use ($id_client, $friends, $followers) {
+                        $query->where('posts.privacy', Post::public);
+                    })
+                    ->orWhere(function ($query) use ($id_client) {
+                        $query->where('posts.privacy', Post::private)
+                            ->where('posts.id_client', $id_client);
+                    });
+            })
+            ->where('username', $request->username)
+            ->orderByDESC('posts.created_at')
+            ->get();
+        foreach ($post as $key => $value) {
+            $check = PostLike::where('id_post', $value->id)->where('id_client', $client->id)->first();
+            $totalLikes = PostLike::where('id_post', $value->id)->count();
+            if ($check) {
+                $post[$key]['liked'] = 1;
+            } else {
+                $post[$key]['liked'] = 0;
+            }
+            $post[$key]['likes'] = $totalLikes;
+            $comments = Comment::where('id_post', $value->id)->get();
+            $post[$key]['comments'] = count($comments);
+        }
+        $poster = Client::where('username', $request->username)->first();
+        $quatity = Post::where('id_client', $poster->id)->count();
+        return response()->json([
+            'status' => 6,
+            'dataPost'    => $post,
+            'quatity'    => $quatity,
         ]);
     }
 }

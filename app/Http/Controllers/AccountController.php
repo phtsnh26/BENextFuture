@@ -62,9 +62,9 @@ class AccountController extends Controller
             'avatar' => $avata,
             'hash_active' => $randomSixDigits,
         ]);
-        // $dataMail['code']          =   $randomSixDigits;
-        // $dataMail['fullname']      =   $request->fullname;
-        // Mail::to($request->email)->send(new ActiveMail($dataMail));
+        $dataMail['code']          =   $randomSixDigits;
+        $dataMail['fullname']      =   $request->fullname;
+        Mail::to($request->email)->send(new ActiveMail($dataMail));
         if ($user) {
             return response()->json([
                 'status'    => 1,
