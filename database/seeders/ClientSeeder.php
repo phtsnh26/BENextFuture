@@ -29,6 +29,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Tôm',
                 'address'           => '123 Đà Nẵng',
                 'date_of_birth'     => '2002-06-02',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'minhquan',
@@ -42,6 +43,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Quân',
                 'address'           => '123 Đà Nẵng',
                 'date_of_birth'     => '2002-06-02',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'huuhoang',
@@ -55,6 +57,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Hoàng',
                 'address'           => '123 Đà Nẵng',
                 'date_of_birth'     => '2002-06-02',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'duylinh',
@@ -68,6 +71,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Linh',
                 'address'           => '123 Đà Nẵng',
                 'date_of_birth'     => '2002-06-02',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'tanhdeptrai',
@@ -81,6 +85,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Tánh',
                 'address'           => '321 Đà Nẵng',
                 'date_of_birth'     => '2002-06-02',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'nhingu',
@@ -94,6 +99,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Nhi Ngu',
                 'address'           => '321 Đà Nẵng',
                 'date_of_birth'     => '2002-06-02',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'thanhthuy',
@@ -107,6 +113,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Tít',
                 'address'           => '321 Đà Nẵng',
                 'date_of_birth'     => '2002-06-02',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'thaonguyen',
@@ -120,6 +127,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Zen',
                 'address'           => '321 Đà Nẵng',
                 'date_of_birth'     => '2002-06-02',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'phong',
@@ -133,6 +141,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Phong Ngu',
                 'address'           => '321 Đà Nẵng',
                 'date_of_birth'     => '2002-06-02',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'ductrong',
@@ -146,6 +155,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Trọng',
                 'address'           => '321 Đà Nẵng',
                 'date_of_birth'     => '2002-06-02',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'linhnguyen',
@@ -159,6 +169,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Linhie',
                 'address'           => '321 Hanoi',
                 'date_of_birth'     => '2000-10-15',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'minhhoang',
@@ -172,6 +183,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Minhie',
                 'address'           => '123 Ho Chi Minh',
                 'date_of_birth'     => '1998-05-20',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'ngochuyen123',
@@ -185,6 +197,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Chuyên Nho',
                 'address'           => '456 Hanoi',
                 'date_of_birth'     => '1995-08-25',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'thuylinh',
@@ -198,6 +211,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Linhie',
                 'address'           => '789 Ho Chi Minh',
                 'date_of_birth'     => '1997-03-12',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'songkang',
@@ -211,6 +225,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Anhie',
                 'address'           => '101 Da Nang',
                 'date_of_birth'     => '1994-11-18',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'maihoa',
@@ -224,6 +239,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Hòa Mai',
                 'address'           => '888 Hanoi',
                 'date_of_birth'     => '1996-07-03',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'phuonglan',
@@ -237,6 +253,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Lan Phương',
                 'address'           => '999 Ho Chi Minh',
                 'date_of_birth'     => '1993-04-30',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'vananh',
@@ -250,6 +267,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Anh Vân',
                 'address'           => '222 Hanoi',
                 'date_of_birth'     => '1990-12-15',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'minhthu',
@@ -263,6 +281,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Thu Minh',
                 'address'           => '333 Ho Chi Minh',
                 'date_of_birth'     => '1992-05-20',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'thanhhoa',
@@ -276,6 +295,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Hòa Thanh',
                 'address'           => '444 Hanoi',
                 'date_of_birth'     => '1988-11-18',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'quynhtrang',
@@ -289,6 +309,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Trang Quỳnh',
                 'address'           => '555 Da Nang',
                 'date_of_birth'     => '1991-07-03',
+                'is_active'         =>  1,
             ],
             [
                 'username'          => 'thihien',
@@ -302,6 +323,7 @@ class ClientSeeder extends Seeder
                 'nickname'          => 'Hiền Thi',
                 'address'           => '666 Ho Chi Minh',
                 'date_of_birth'     => '1989-04-30',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'hongnga',
@@ -315,6 +337,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'Nga Hồng',
                 'address'        => '456 Hue',
                 'date_of_birth'  => '1994-09-18',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'khanhtung',
@@ -328,6 +351,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'Tùng Khánh',
                 'address'        => '789 Ho Chi Minh',
                 'date_of_birth'  => '1992-05-12',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'tramy',
@@ -341,6 +365,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'My Trà',
                 'address'        => '111 Da Nang',
                 'date_of_birth'  => '1993-03-25',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'quanphuc',
@@ -354,6 +379,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'Phúc Quân',
                 'address'        => '987 Can Tho',
                 'date_of_birth'  => '1997-11-08',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'ngochuyen',
@@ -367,6 +393,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'Huyền Ngọc',
                 'address'        => '654 Hai Phong',
                 'date_of_birth'  => '1995-12-03',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'hoainam',
@@ -380,6 +407,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'Nam Hòa',
                 'address'        => '333 Hue',
                 'date_of_birth'  => '1998-04-22',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'tranghien',
@@ -393,6 +421,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'Hiền Trang',
                 'address'        => '111 Ho Chi Minh',
                 'date_of_birth'  => '1996-09-10',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'tienthanh',
@@ -406,6 +435,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'Thành Tiến',
                 'address'        => '555 Da Nang',
                 'date_of_birth'  => '1993-12-05',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'lanan',
@@ -419,6 +449,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'skuukzky',
                 'address'        => 'Seoul',
                 'date_of_birth'  => '1992-07-18',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'minhtuan',
@@ -432,6 +463,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'Tuấn Minh',
                 'address'        => '888 Hai Phong',
                 'date_of_birth'  => '1997-02-14',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'thienhong',
@@ -445,6 +477,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'Hồng Thiên',
                 'address'        => '444 Hue',
                 'date_of_birth'  => '1991-05-28',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'quanminh',
@@ -458,6 +491,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'Quân Minh',
                 'address'        => '666 Ho Chi Minh',
                 'date_of_birth'  => '1990-08-12',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'thuhuong',
@@ -471,6 +505,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'Hương Thu',
                 'address'        => '123 Da Nang',
                 'date_of_birth'  => '1994-02-09',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'thanhtruong',
@@ -484,6 +519,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'Em sinh viên',
                 'address'        => 'Đà Nẵng',
                 'date_of_birth'  => '2001-10-15',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'ngocdiep',
@@ -497,6 +533,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'Diệp Ngọc',
                 'address'        => '222 Hai Phong',
                 'date_of_birth'  => '1996-11-20',
+                'is_active'         =>  1,
             ],
             [
                 'username'       => 'dangquang',
@@ -510,6 +547,7 @@ class ClientSeeder extends Seeder
                 'nickname'       => 'Quang Không Ngu',
                 'address'        => 'Đà Nẵng',
                 'date_of_birth'  => '2002-11-20',
+                'is_active'         =>  1,
             ],
         ]);
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CommentGroupController;
@@ -19,9 +20,10 @@ use App\Http\Controllers\StoriesController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/sign-up', [ClientController::class, 'register']);
-Route::post('/sign-in', [ClientController::class, 'login']);
-Route::get('/authorization', [ClientController::class, 'authorization']);
+Route::post('/sign-up', [AccountController::class, 'register']);
+Route::post('/sign-in', [AccountController::class, 'login']);
+Route::post('/active-mail', [AccountController::class, 'activeMail']);
+Route::get('/authorization', [AccountController::class, 'authorization']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -100,6 +102,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/current-group', [GroupController::class, 'getData']);                             // lấy thông tin nhóm hiện tại thông qua id
         Route::post('/update-privacy', [GroupController::class, 'updatePrivacy']);                      // cập nhật quyền riêng tư nhóm
         Route::post('/update-display', [GroupController::class, 'updateDisplay']);                      // cập nhật quyền hiển thị nhóm
+        Route::post('/update-anonymity', [GroupController::class, 'updateAnonymity']);                  // cập nhật quyền ẩn danh
         Route::post('/rename-group', [GroupController::class, 'renameGroup']);                          // cập nhật tên nhóm
         Route::post('/update-join-approval', [GroupController::class, 'updateJoinApproval']);           // cập nhật duyệt vào nhóm
         Route::post('/update-post-approval', [GroupController::class, 'updatePostApproval']);           // cập nhật duyệt đăng bài
