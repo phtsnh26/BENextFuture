@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SignUpRequest;
 use App\Models\Client;
+use App\Models\Connection;
 use App\Models\Follower;
 use App\Models\Friend;
+use App\Models\Group;
+use App\Models\PostGroup;
 use App\Models\User;
 use DateTime;
 use Illuminate\Http\Request;
@@ -245,20 +248,6 @@ class ClientController extends Controller
             'status' => false
         ], 200);
     }
-    public function search(Request $request)
-    {
-        $client = $request->user();
-        $keySearch = '%' . $request->keySearch . '%';
-        $data = Client::where(function ($query) use ($keySearch) {
-            $query->where('username', 'like', $keySearch)
-                ->orWhere('fullname', 'like', $keySearch)
-                ->orWhere('nickname', 'like', $keySearch);
-        })
-            ->where('id', '!=', $client->id)
-            ->limit(5)
-            ->get();
-        return response()->json([
-            'dataSearch' => $data
-        ]);
-    }
+   
+
 }
