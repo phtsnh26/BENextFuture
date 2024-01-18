@@ -16,6 +16,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostGroupController;
 use App\Http\Controllers\PostLikeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StoriesController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
@@ -27,7 +28,8 @@ Route::get('/authorization', [AccountController::class, 'authorization']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::post('/search', [ClientController::class, 'search']);
+    Route::post('/search-nav', [SearchController::class, 'searchNav']);
+    Route::post('/search', [SearchController::class, 'search']);
 
     Route::get('/sign-out', [ClientController::class, 'signOut']);
 
