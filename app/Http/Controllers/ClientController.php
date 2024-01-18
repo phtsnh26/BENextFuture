@@ -15,79 +15,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class ClientController extends Controller
 {
-
-    public function login(Request $request)
-    {
-        $user = Client::where("email", $request->username)->orWhere('username', $request->username)->first();
-
-        if ($user && Hash::check($request->password, $user->password)) {
-
-            if (!isset($request->remember) || $request->remember == false) {
-                Auth::guard('client')->login($user);
-            } else {
-                Auth::guard('client')->login($user, true);
-            }
-            $authenticatedUser = Auth::guard('client')->user();
-            $tokens = $authenticatedUser->tokens;
-            $limit = 4;
-            if ($tokens->count() >= $limit) {
-                // Giữ lại giới hạn số lượng token
-                $tokens->sortByDesc('created_at')->slice($limit)->each(function ($token) {
-                    $token->delete();
-                });
-            }
-            $token = $authenticatedUser->createToken('authToken', ['*'], now()->addDays(7));
-
-            return response()->json([
-                'status' => 1,
-                'token' => $token->plainTextToken,
-                'type_token' => 'Bearer',
-            ]);
-        }
-        return response()->json([
-            'status' => 0,
-            'message' => 'Invalid login information',
-        ]);
-    }
-
-
-    public function register(SignUpRequest $request)
-    {
-        if ($request->gender == 0) {
-            $avata = "avatar_female.jpg";
-        } else if ($request->gender == 1) {
-            $avata = "avatar_male.jpg";
-        } else {
-            $avata = "avatar_other.jpg";
-        }
-        $user = Client::create([
-            'username' => $request->username,
-            'password' => bcrypt($request->password),
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'fullname' => $request->fullname,
-            'nick_name' => $request->username,
-            'date_of_birth' => $request->date_of_birth,
-            'gender' => $request->gender,
-            'avatar' => $avata,
-        ]);
-        if ($user) {
-            return response()->json([
-                'status'    => 1,
-                'message'    => "Your account has been successfully created!",
-            ]);
-        } else {
-            return response()->json([
-                'status'    => 0,
-                'message'    => "Fail",
-            ]);
-        }
-    }
-
     public function signOut(Request $request)
     {
         $client = $request->user();
@@ -99,6 +29,7 @@ class ClientController extends Controller
             return response()->json(['status' => 0]);
         }
     }
+
     public function getData()
     {
         $data = Client::all();
@@ -228,7 +159,22 @@ class ClientController extends Controller
             }
         }
     }
-
+    public function search(Request $request)
+    {
+        $client = $request->user();
+        $keySearch = '%' . $request->keySearch . '%';
+        $data = Client::where(function ($query) use ($keySearch) {
+            $query->where('username', 'like', $keySearch)
+                ->orWhere('fullname', 'like', $keySearch)
+                ->orWhere('nickname', 'like', $keySearch);
+        })
+            ->where('id', '!=', $client->id)
+            ->limit(5)
+            ->get();
+        return response()->json([
+            'dataSearch' => $data
+        ]);
+    }
     public function authorization(Request $request): \Illuminate\Http\JsonResponse
     {
         $token = $request->bearerToken();
@@ -248,6 +194,4 @@ class ClientController extends Controller
             'status' => false
         ], 200);
     }
-   
-
 }

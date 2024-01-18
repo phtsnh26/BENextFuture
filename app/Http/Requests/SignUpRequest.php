@@ -39,7 +39,7 @@ class SignUpRequest extends FormRequest
             'date_of_birth' => 'required|date',
             'avatar' => 'nullable|string',
             'status' => 'integer|in:0,1',
-            'gender' => 'required|in:1,2,0',
+            'gender' => 'required|in:1,0,-1',
             'nickname' => 'nullable|string',
             'address' => 'nullable|string',
         ];
