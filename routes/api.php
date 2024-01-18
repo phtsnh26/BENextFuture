@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CommentGroupController;
 use App\Http\Controllers\ConnectionController;
 use App\Http\Controllers\FollowerController;
 use App\Http\Controllers\FriendController;
@@ -10,18 +12,25 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OverViewController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\PostGroupController;
 use App\Http\Controllers\PostLikeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StoriesController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/sign-up', [ClientController::class, 'register']);
-Route::post('/sign-in', [ClientController::class, 'login']);
-Route::get('/authorization', [ClientController::class, 'authorization']);
+Route::post('/sign-up', [AccountController::class, 'register']);
+Route::post('/sign-in', [AccountController::class, 'login']);
+Route::post('/active-mail', [AccountController::class, 'activeMail']);
+Route::get('/authorization', [AccountController::class, 'authorization']);
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/search-nav', [SearchController::class, 'searchNav']);
+    Route::post('/search', [SearchController::class, 'search']);
 
     Route::get('/sign-out', [ClientController::class, 'signOut']);
 
@@ -96,6 +105,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/current-group', [GroupController::class, 'getData']);                             // lấy thông tin nhóm hiện tại thông qua id
         Route::post('/update-privacy', [GroupController::class, 'updatePrivacy']);                      // cập nhật quyền riêng tư nhóm
         Route::post('/update-display', [GroupController::class, 'updateDisplay']);                      // cập nhật quyền hiển thị nhóm
+        Route::post('/update-anonymity', [GroupController::class, 'updateAnonymity']);                  // cập nhật quyền ẩn danh
+        Route::post('/rename-group', [GroupController::class, 'renameGroup']);                          // cập nhật tên nhóm
         Route::post('/update-join-approval', [GroupController::class, 'updateJoinApproval']);           // cập nhật duyệt vào nhóm
         Route::post('/update-post-approval', [GroupController::class, 'updatePostApproval']);           // cập nhật duyệt đăng bài
         Route::post('/approve-connection', [ConnectionController::class, 'approveConnection']);             // phê duyệt lời mời từ Request_Group vào Connection
@@ -116,6 +127,31 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/remove-member', [MemberController::class, 'removeMember']);                   // Xóa member ra khỏi group
             Route::post('/grant-permission', [MemberController::class, 'grantPermissions']);            // cấp quyền cho member trong group
             Route::post('/remove-permission', [MemberController::class, 'rmovePermissions']);          // xóa quyền cho member trong group
+        });
+
+        Route::group(['prefix' => '/overview'], function () {
+            Route::post('data-overview', [OverViewController::class, 'dataOverview']);
+            Route::post('/overview-request-group', [OverViewController::class, 'request_group_overview']);
+        });
+
+        Route::group(['prefix' => '/post'], function () {
+            Route::post('/create', [PostGroupController::class, 'store']);
+            Route::post('/data', [PostGroupController::class, 'data']);                                 // lấy danh sách bài cần duyệt
+            Route::post('/data-approve', [PostGroupController::class, 'dataApprove']);                  // lấy danh sách bài cần duyệt
+            Route::post('/approve', [PostGroupController::class, 'approve']);                           // duyệt bài
+            Route::post('/approve-select', [PostGroupController::class, 'approveSelect']);              // duyệt bài được chọn
+            Route::post('/refuse', [PostGroupController::class, 'refuse']);                             // từ chối bài
+            Route::post('/refuse-select', [PostGroupController::class, 'refuseSelect']);                // từ chối bài được chọn
+            Route::post('/like', [PostGroupController::class, 'like']);                                 // like bài
+            Route::post('/un-like', [PostGroupController::class, 'unLike']);                            // huỷ like bài
+        });
+
+        Route::group(['prefix' => '/comment'], function () {
+            Route::post('/data', [CommentGroupController::class, 'data']);
+            Route::post('/data-reply', [CommentGroupController::class, 'dataReply']);
+            Route::post('/create', [CommentGroupController::class, 'store']);
+            Route::post('/like', [CommentGroupController::class, 'like']);
+            Route::post('/un-like', [CommentGroupController::class, 'unLike']);
         });
     });
     Route::group(['prefix' => '/notification'], function () {

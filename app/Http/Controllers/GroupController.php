@@ -291,17 +291,37 @@ class GroupController extends Controller
         try {
             DB::beginTransaction();
             $client = $request->user();
-            $check = RequestGroup::where('id_group', $request->id)->where('id_invite', $client->id)->first();
+            $check = RequestGroup::where('id_group', $request->id)
+                ->where('id_invite', $client->id)->first();
             if (!$check) {
-                RequestGroup::create([
-                    'id_group' => $request->id,
-                    'id_invite' => $client->id,
-                    'status' => RequestGroup::come,
-                ]);
+                if (Group::find($request->id)->join_approval == Group::requiredGroupApproval) {
+                    RequestGroup::create([
+                        'id_group' => $request->id,
+                        'id_invite' => $client->id,
+                        'status' => RequestGroup::come,
+                    ]);
+                } else {
+                    Connection::create([
+                        'id_client' => $client->id,
+                        'id_group' => $request->id,
+                        'id_role' => Role::member,
+                    ]);
+                }
             } else {
-                $check->touch();
+                if (Group::find($request->id)->join_approval == Group::requiredGroupApproval) {
+                    $check->touch();
+                } else {
+                    Connection::create([
+                        'id_client' => $client->id,
+                        'id_group' => $request->id,
+                        'id_role' => Role::member,
+                    ]);
+                    $del = RequestGroup::where('id_invite', $client->id)
+                        ->where('id_group', $request->id)
+                        ->first();
+                    $del->delete();
+                }
             }
-
             DB::commit();
             return response()->json([
                 'status'    => 1,
@@ -388,7 +408,7 @@ class GroupController extends Controller
             DB::commit();
 
 
-            if ($request->join_approval == Group::turnOnJoin) {
+            if ($request->join_approval == Group::requiredGroupApproval) {
                 return response()->json([
                     'status'    => 1,
                     'message'   => 'From now on, applications to join the group need to be approved!',
@@ -595,6 +615,29 @@ class GroupController extends Controller
 
         return response()->json([
             'dataPopular' => $groupRandom,
+        ]);
+    }
+
+    public function renameGroup(Request $request)
+    {
+        $group = Group::find($request->id_group);
+        $group->group_name = $request->group_name;
+        $group->save();
+        return response()->json([
+            'status' =>  1,
+            'group_name' => $group,
+            'message'   => 'Rename group successfully',
+        ]);
+    }
+    public function updateAnonymity(Request $request)
+    {
+        $group = Group::find($request->id_group);
+        $group->anonymity = $request->anonymity;
+        $group->save();
+        return response()->json([
+            'status' =>  1,
+            'group_name' => $group,
+            'message'   => 'Update group successfully',
         ]);
     }
 }

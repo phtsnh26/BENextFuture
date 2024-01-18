@@ -21,7 +21,7 @@ class PostController extends Controller
 
         if ($request->hasFile('images') && count($request->images) > 0) {
             $images = $request->file('images');
-            $fileNames = [];
+            $fileNames = []; 
             foreach ($images as $image) {
                 if ($image->isValid()) {
                     $file_name = $image->getClientOriginalName();

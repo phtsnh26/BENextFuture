@@ -23,7 +23,8 @@ class Client extends Authenticatable
         'nickname',
         'address',
         'bio',
-
+        'is_active',        // check đã kích hoạt mail hay chưa
+        'hash_active'       // check mã gửi để xác nhận kích hoạt
     ];
     protected $table = 'clients';
 
