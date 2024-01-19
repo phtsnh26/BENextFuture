@@ -12,6 +12,16 @@ use Illuminate\Support\Facades\Mail;
 
 class AccountController extends Controller
 {
+    public function deleteActive(Request $request)
+    {
+        Client::where('email', $request->email)->update([
+            'hash_active' => null
+        ]);
+        return response()->json([
+            'status'    => 1,
+            'message'   => 'Deleted hash active successfully',
+        ]);
+    }
     public function activeMail(Request $request)
     {
         $hash_active = $request->hash_active;
@@ -35,7 +45,7 @@ class AccountController extends Controller
         } else {
             return response()->json([
                 'status'  => 0,
-                'message' => "Invalid confirmation code",
+                'message' => "Invalid confirmation code. Please try again",
             ]);
         }
     }
