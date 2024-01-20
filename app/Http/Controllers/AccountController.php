@@ -12,6 +12,27 @@ use Illuminate\Support\Facades\Mail;
 
 class AccountController extends Controller
 {
+    public function resentMail(Request $request)
+    {
+        $user = Client::where('email', $request->email)->first();
+        if ($user) {
+            $user->update([
+                'hash_active' => mt_rand(100000, 999999)
+            ]);
+            // $dataMail['code'] = $user->hash_active;
+            // $dataMail['fullname'] = $user->fullname;
+            // Mail::to($request->email)->send(new ActiveMail($dataMail));
+            return response()->json([
+                'status'    => 1,
+                'message'   => 'Sent mail successfully',
+            ]);
+        } else {
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Email does not exist',
+            ]);
+        }
+    }
     public function deleteActive(Request $request)
     {
         Client::where('email', $request->email)->update([
@@ -31,7 +52,11 @@ class AccountController extends Controller
             if ($user_hash_active->is_active == 0) {
                 $user_hash_active->is_active = 1;
                 $user_hash_active->save();
-
+                if ($user_hash_active) {
+                    $user_hash_active->update([
+                        'hash_active' => null
+                    ]);
+                }
                 return response()->json([
                     'status'  => 1,
                     'message' => "Your account has been successfully activated",
@@ -72,9 +97,9 @@ class AccountController extends Controller
             'avatar' => $avata,
             'hash_active' => $randomSixDigits,
         ]);
-        $dataMail['code']          =   $randomSixDigits;
-        $dataMail['fullname']      =   $request->fullname;
-        Mail::to($request->email)->send(new ActiveMail($dataMail));
+        // $dataMail['code']          =   $randomSixDigits;
+        // $dataMail['fullname']      =   $request->fullname;
+        // Mail::to($request->email)->send(new ActiveMail($dataMail));
         if ($user) {
             return response()->json([
                 'status'    => 1,
