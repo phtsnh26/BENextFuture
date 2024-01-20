@@ -25,6 +25,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/sign-up', [AccountController::class, 'register']);
 Route::post('/sign-in', [AccountController::class, 'login']);
 Route::post('/active-mail', [AccountController::class, 'activeMail']);
+Route::post('/resent-mail', [AccountController::class, 'resentMail']);
+Route::post('/delete-active', [AccountController::class, 'deleteActive']);
 Route::get('/authorization', [AccountController::class, 'authorization']);
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -163,16 +165,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     });
     Route::group(['prefix' => '/admin'], function () {
-        Route::group(['prefix' => '/post'], function(){
+        Route::group(['prefix' => '/post'], function () {
             Route::get('/getAllPosts', [AdminController::class, "getAllPosts"]);            // tất cả bài đăng
             Route::post('/deletePost', [AdminController::class, "deletePost"]);             // xóa bài đăng
         });
-        Route::group(['prefix' => '/account'], function(){
+        Route::group(['prefix' => '/account'], function () {
             Route::get('/getAllAccounts', [AdminController::class, "getAllAccounts"]);            // tất cả nhóm
             Route::post('/banAccount', [AdminController::class, "banAccount"]);             // xóa nhóm
         });
     });
-    
+
     Route::get('/test', [TestController::class, 'test']);
 
     Route::post('/upload-file', [ImageController::class, 'upload']);

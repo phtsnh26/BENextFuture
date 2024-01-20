@@ -134,7 +134,6 @@ class ProfileController extends Controller
                     $avatarUrl = 'avatar_other.jpg';
                 }
             }
-
             $data->update([
                 'phone_number' => $request->phone_number ?? $data->phone_number,
                 'fullname' => $request->fullname ?? $data->fullname,
@@ -142,8 +141,8 @@ class ProfileController extends Controller
                 'avatar' => $avatarUrl ?? $data->avatar,
                 'gender' => $request->gender ?? $data->gender,
                 'nickname' => $request->nickname ?? $data->nickname,
-                'address' => $request->address ?? $data->address,
-                'bio' => $request->bio ?? $data->bio,
+                'address' => empty($request->address) ? '' : $request->address,
+                'bio' => empty($request->bio) ? '' : $request->bio,
             ]);
         }
         return response()->json([
