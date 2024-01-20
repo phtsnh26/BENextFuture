@@ -44,7 +44,7 @@ class SearchController extends Controller
             $LIMIT_CLIENT = 99;
         }
         $client = $request->user();
-
+        $id = $client->id;
         $keySearch = '%' . strtolower($request->keySearch) . '%';
         $dataClient = DB::table('clients as c')
             ->select('c.id', 'c.username', 'c.fullname', 'c.avatar', 'c.address', 'c.nickname')
@@ -53,26 +53,26 @@ class SearchController extends Controller
                     WHEN c.id IN (
                         SELECT id_friend
                         FROM friends
-                        WHERE my_id = 1
+                        WHERE my_id = ?
                         UNION
                         SELECT my_id
                         FROM friends
-                        WHERE id_friend = 1
+                        WHERE id_friend = ?
                     ) THEN 'a'
                     WHEN c.id IN (
                         SELECT my_id
                         FROM followers
-                        WHERE id_follower = 1
+                        WHERE id_follower = ?
                     ) THEN 'b'
                     ELSE 'c'
                 END as relationship
-            ")
+            ", [$id, $id, $id])
             ->where(function ($query) use ($keySearch) {
                 $query->where('c.username', 'like', '%' . $keySearch . '%')
                     ->orWhere('c.fullname', 'like', '%' . $keySearch . '%')
                     ->orWhere('c.nickname', 'like', '%' . $keySearch . '%');
             })
-            ->where('c.id', '!=', 1)
+            ->where('c.id', '!=', $id)
             ->where('c.status', 1)
             ->orderBy('relationship')
             ->limit($LIMIT_CLIENT)

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\Comment;
+use App\Models\CommentLike;
 use App\Models\Follower;
 use App\Models\Friend;
 use App\Models\Post;
@@ -41,6 +42,7 @@ class PostController extends Controller
         if ($post) {
             return response()->json([
                 'status'    => 1,
+                'post'      => $post,
                 'message'   => 'Posted successfully!',
             ]);
         } else {
@@ -150,5 +152,43 @@ class PostController extends Controller
             'dataPost'    => $post,
             'quatity'    => $quatity,
         ]);
+    }
+    public function destroy(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $post = Post::find($request->id);
+            if ($post) {
+                $comments = Comment::where('id_post', $post->id)->get();
+                $post_likes = PostLike::where('id_post', $post->id)->get();
+                foreach ($post_likes as $key => $value) {
+                    $value->delete();
+                }
+                foreach ($comments as $key => $value) {
+                    $likes = CommentLike::where('id_comment', $value->id)->get();
+                    foreach ($likes as $k => $v) {
+                        $v->delete();
+                    }
+                    $value->delete();
+                }
+                $post->delete();
+                DB::commit();
+                return response()->json([
+                    'status' => 1,
+                    'message' => 'deleted successfully!',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => -1,
+                    'message' => 'This post was not found!',
+                ]);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 0,
+                'message' => 'delete failed!',
+            ]);
+        }
     }
 }

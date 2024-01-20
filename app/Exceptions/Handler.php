@@ -28,7 +28,7 @@ class Handler extends ExceptionHandler
             if($request->is('api/*')){
                 return response()->json([
                     'error'   => $e,
-                    'request'   => $request,
+                    'request'   => $request, 
                     'message'   => "Error login",
                 ], 500);
             }
