@@ -54,6 +54,7 @@ class PostGroupController extends Controller
             if ($post) {
                 return response()->json([
                     'status'    => 1,
+                    'post'      => $post,
                     'message'   => 'Posted successfully!',
                 ]);
             } else {

@@ -56,10 +56,6 @@ class CommentController extends Controller
 
     public function store(Request $request)
     {
-        // return response()->json([
-        //     'status'    => $request->all(),
-        // ]);
-
         $client = $request->user();
         $data = $request->all();
         $data['id_client'] = $client->id;
@@ -76,8 +72,11 @@ class CommentController extends Controller
             }
         }
         if ($check) {
+            $check->fullname = $request->user()->fullname;
+            $check->avatar = $request->user()->avatar;
             return response()->json([
                 'status'    => 1,
+                'comment'   => $check,
                 'message'   => 'commented successfully!',
             ]);
         } else {
