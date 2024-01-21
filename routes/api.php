@@ -76,7 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => '/post'], function () {
         Route::post('/create', [PostController::class, "create"]);
         Route::post('/delete', [PostController::class, 'destroy']);
-
+        Route::post('/update', [PostController::class, 'update']);
         Route::get('/data', [PostController::class, "dataPost"]);
         Route::post('/data-profile', [PostController::class, "dataProfile"]);
 
