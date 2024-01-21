@@ -146,6 +146,7 @@ class ProfileController extends Controller
             ]);
         }
         return response()->json([
+            'dataEditProfile' => $data,
             'status' => 1,
             'message' => 'Update profile successfully'
         ]);

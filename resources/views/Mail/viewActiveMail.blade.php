@@ -145,8 +145,7 @@
                                                                                             border-radius: 50px;
                                                                                             cursor: auto;
                                                                                         ">
-                                                                                            <a href="#"
-                                                                                                style="text-decoration: none;
+                                                                                            <a style="text-decoration: none;
                                                                                                 cursor: auto;
                                                                                                 color: white;
                                                                                                 font-size: 2rem;"
