@@ -14,14 +14,16 @@ class AccountController extends Controller
 {
     public function resentMail(Request $request)
     {
-        $user = Client::where('email', $request->email)->first();
+
+        $user = Client::where('email', $request->email)
+            ->first();
         if ($user) {
             $user->update([
                 'hash_active' => mt_rand(100000, 999999)
             ]);
-            // $dataMail['code'] = $user->hash_active;
-            // $dataMail['fullname'] = $user->fullname;
-            // Mail::to($request->email)->send(new ActiveMail($dataMail));
+            $dataMail['code'] = $user->hash_active;
+            $dataMail['fullname'] = $user->fullname;
+            Mail::to($request->email)->send(new ActiveMail($dataMail));
             return response()->json([
                 'status'    => 1,
                 'message'   => 'Sent mail successfully',
@@ -35,6 +37,7 @@ class AccountController extends Controller
     }
     public function deleteActive(Request $request)
     {
+
         Client::where('email', $request->email)->update([
             'hash_active' => null
         ]);
@@ -97,9 +100,9 @@ class AccountController extends Controller
             'avatar' => $avata,
             'hash_active' => $randomSixDigits,
         ]);
-        // $dataMail['code']          =   $randomSixDigits;
-        // $dataMail['fullname']      =   $request->fullname;
-        // Mail::to($request->email)->send(new ActiveMail($dataMail));
+        $dataMail['code']          =   $randomSixDigits;
+        $dataMail['fullname']      =   $request->fullname;
+        Mail::to($request->email)->send(new ActiveMail($dataMail));
         if ($user) {
             return response()->json([
                 'status'    => 1,
@@ -115,43 +118,59 @@ class AccountController extends Controller
 
     public function login(Request $request)
     {
-        $user = Client::where("email", $request->username)->orWhere('username', $request->username)->first();
-        if ($user->is_active == 1) {
-            if ($user && Hash::check($request->password, $user->password)) {
-
-                if (!isset($request->remember) || $request->remember == false) {
-                    Auth::guard('client')->login($user);
-                } else {
-                    Auth::guard('client')->login($user, true);
-                }
-                $authenticatedUser = Auth::guard('client')->user();
-                $tokens = $authenticatedUser->tokens;
-                $limit = 4;
-                if ($tokens->count() >= $limit) {
-                    // Giữ lại giới hạn số lượng token
-                    $tokens->sortByDesc('created_at')->slice($limit)->each(function ($token) {
-                        $token->delete();
-                    });
-                }
-                $token = $authenticatedUser->createToken('authToken', ['*'], now()->addDays(7));
-
+        $user = Client::where('username', $request->username)
+            ->orWhere('email', $request->username)
+            ->first();
+        if ($user && Hash::check($request->password, $user->password)) {
+            if ($user->status == Client::banned_account) {
                 return response()->json([
-                    'status' => 1,
-                    'token' => $token->plainTextToken,
-                    'type_token' => 'Bearer',
+                    'status'    => -2,
+                    'message'   => 'Your account has been banned',
                 ]);
+            } else {
+                if ($user->is_active == 1) {
+                    if (!isset($request->remember) || $request->remember == false) {
+                        Auth::guard('client')->login($user);
+                    } else {
+                        Auth::guard('client')->login($user, true);
+                    }
+                    $authenticatedUser = Auth::guard('client')->user();
+                    $tokens = $authenticatedUser->tokens;
+                    $limit = 4;
+                    if ($tokens->count() >= $limit) {
+                        // Giữ lại giới hạn số lượng token
+                        $tokens->sortByDesc('created_at')->slice($limit)->each(function ($token) {
+                            $token->delete();
+                        });
+                    }
+                    $token = $authenticatedUser->createToken('authToken', ['*'], now()->addDays(7));
+
+                    return response()->json([
+                        'status' => 1,
+                        'token' => $token->plainTextToken,
+                        'type_token' => 'Bearer',
+                    ]);
+                } else {
+                    if ($user->hash_active == null) {
+                        $user->hash_active = mt_rand(100000, 999999);
+                        $user->save();
+                        $dataMail['code'] = $user->hash_active;
+                        $dataMail['fullname'] = $user->fullname;
+                        Mail::to($user->email)->send(new ActiveMail($dataMail));
+                    }
+                    return response()->json([
+                        'status' => -1,
+                        'email' => $user->email,
+                        'message' => 'Your account has not been activated',
+                    ]);
+                }
             }
         } else {
             return response()->json([
                 'status' => 0,
-                'message' => 'Your account has not been activated',
+                'message' => 'Invalid login information',
             ]);
         }
-
-        return response()->json([
-            'status' => 0,
-            'message' => 'Invalid login information',
-        ]);
     }
 
     public function authorization(Request $request): \Illuminate\Http\JsonResponse
