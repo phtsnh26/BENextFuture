@@ -191,4 +191,27 @@ class PostController extends Controller
             ]);
         }
     }
+    public function update(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $post = Post::find($request->id);
+            if ($post) {
+                $arr = $request->all();
+                $post->update($arr);
+                DB::commit();
+                return response()->json([
+                    'status'    => 1,
+                    'post'      => $post,
+                    'message'   => 'Updated successfully!',
+                ]);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Failed update',
+            ]);
+        }
+    }
 }
