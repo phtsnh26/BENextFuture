@@ -26,44 +26,44 @@ class StoriesController extends Controller
                     ->select("my_id as result_id")
             )
             ->pluck('result_id');
-        $followers = Follower::where('my_id', $client->id)
-            ->select('id_follower')->pluck('id_follower');
-
-
-        $dataStory = Stories::leftJoin('clients', 'clients.id', 'stories.id_client')
-            ->select('stories.*', 'clients.fullname', 'clients.avatar')
-            ->where(function ($query) use ($id_client, $friends, $followers, $now) {
-                $query->where('stories.created_at', '>=', $now->subDay())
-                    ->where(function ($query) use ($id_client, $friends, $followers) {
-                        $query->where('stories.privacy', Stories::public)
-                            ->where(function ($query) use ($id_client, $friends, $followers) {
-                                $query->where('stories.id_client', $id_client)
-                                    ->orWhereIn('stories.id_client', $friends)
-                                    ->orWhereIn('stories.id_client', $followers);
+        $result = Stories::where('created_at', '>=', $now->subDays(15))
+            ->groupBy('id_client')
+            ->select('id_client')
+            ->limit(4)
+            ->get();
+        foreach ($result as $key => $value) {
+            $dataStoryOfClient = Stories::leftJoin('clients', 'clients.id', 'stories.id_client')
+                ->select('stories.*', 'clients.fullname', 'clients.avatar')
+                ->where(function ($query) use ($id_client, $friends, $now) {
+                    $query->where('stories.created_at', '>=', $now->subDays(15))
+                        ->where(function ($query) use ($id_client, $friends) {
+                            $query->where(function ($query) {
+                                $query->where('stories.privacy', Stories::public);
                             })
-                            ->orWhere(function ($query) use ($id_client, $friends) {
-                                $query->where('stories.privacy', Stories::friend)
-                                    ->where(function ($query) use ($id_client, $friends) {
-                                        $query->where('stories.id_client', $id_client)
-                                            ->orWhereIn('stories.id_client', $friends);
-                                    });
-                            })
-                            ->orWhere(function ($query) use ($id_client) {
-                                $query->where('stories.privacy', Stories::private)
-                                    ->where('stories.id_client', $id_client);
-                            });
-                    });
-            })
-            ->limit(5)
-            ->orderBy('stories.created_at', 'desc')
-            ->paginate(5, ['*'], 3);
-
+                                ->orWhere(function ($query) use ($id_client, $friends) {
+                                    $query->where('stories.privacy', Stories::friend)
+                                        ->where(function ($query) use ($id_client, $friends) {
+                                            $query->where('stories.id_client', $id_client)
+                                                ->orWhereIn('stories.id_client', $friends);
+                                        });
+                                })
+                                ->orWhere(function ($query) use ($id_client) {
+                                    $query->where('stories.privacy', Stories::private)
+                                        ->where('stories.id_client', $id_client);
+                                });
+                        });
+                })
+                ->where('id_client', $value['id_client'])
+                ->orderBy('stories.created_at', 'desc')
+                ->get();
+            $result[$key]['dataStory'] = $dataStoryOfClient;
+        }
         return response()->json([
-            'dataStory'    => $dataStory,
+            'dataStory'    => $result,
         ]);
     }
     public function getAllStory(Request $request)
-    {
+    {          
         $now = Carbon::now();
         $client = $request->user();
         $id_client = $client->id;
@@ -76,35 +76,40 @@ class StoriesController extends Controller
             ->pluck('result_id');
         $followers = Follower::where('my_id', $client->id)
             ->select('id_follower')->pluck('id_follower');
-        $allStory = Stories::leftJoin('clients', 'clients.id', 'stories.id_client')
-            ->select('stories.*', 'clients.fullname', 'clients.avatar')
-            ->where(function ($query) use ($id_client, $friends, $followers, $now) {
-                $query->where('stories.created_at', '>=', $now->subDay())
-                    ->where(function ($query) use ($id_client, $friends, $followers) {
-                        $query->where('stories.privacy', Stories::public)
-                            ->where(function ($query) use ($id_client, $friends, $followers) {
-                                $query->where('stories.id_client', $id_client)
-                                    ->orWhereIn('stories.id_client', $friends)
-                                    ->orWhereIn('stories.id_client', $followers);
-                            })
-                            ->orWhere(function ($query) use ($id_client, $friends) {
-                                $query->where('stories.privacy', Stories::friend)
-                                    ->where(function ($query) use ($id_client, $friends) {
-                                        $query->where('stories.id_client', $id_client)
-                                            ->orWhereIn('stories.id_client', $friends);
-                                    });
-                            })
-                            ->orWhere(function ($query) use ($id_client) {
-                                $query->where('stories.privacy', Stories::private)
-                                    ->where('stories.id_client', $id_client);
-                            });
-                    });
-            })
-            ->limit(4)
-            ->orderBy('stories.created_at', 'desc')
+
+        $result = Stories::where('created_at', '>=', $now->subDays(15))
+            ->groupBy('id_client')
+            ->select('id_client')
             ->get();
+        foreach ($result as $key => $value) {
+            $allStoryOfClient = Stories::leftJoin('clients', 'clients.id', 'stories.id_client')
+                ->select('stories.*', 'clients.fullname', 'clients.avatar')
+                ->where(function ($query) use ($id_client, $friends, $followers, $now) {
+                    $query->where('stories.created_at', '>=', $now->subDays(15))
+                        ->where(function ($query) use ($id_client, $friends, $followers) {
+                            $query->where(function ($query) {
+                                $query->where('stories.privacy', Stories::public);
+                            })
+                                ->orWhere(function ($query) use ($id_client, $friends) {
+                                    $query->where('stories.privacy', Stories::friend)
+                                        ->where(function ($query) use ($id_client, $friends) {
+                                            $query->where('stories.id_client', $id_client)
+                                                ->orWhereIn('stories.id_client', $friends);
+                                        });
+                                })
+                                ->orWhere(function ($query) use ($id_client) {
+                                    $query->where('stories.privacy', Stories::private)
+                                        ->where('stories.id_client', $id_client);
+                                });
+                        });
+                })
+                ->orderBy('stories.created_at', 'desc')
+                ->where('id_client', $value['id_client'])
+                ->get();
+            $result[$key]['dataStory'] = $allStoryOfClient;
+        }
         return response()->json([
-            'allStory'   => $allStory,
+            'allStory'   => $result,
         ]);
     }
     public function store(Request $request)
