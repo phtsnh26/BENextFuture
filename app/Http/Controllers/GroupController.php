@@ -209,7 +209,8 @@ class GroupController extends Controller
                     ->where('my_id', $value['id'])
                     ->groupBy('my_id')
                     ->get();
-                $info_members[$key]->follower = $follower[0]->count ?? 0;
+
+                $info_members[$key]->follower = $follower[0]->count;
             }
             $info_members[$key]->friends = $friends;
         }
