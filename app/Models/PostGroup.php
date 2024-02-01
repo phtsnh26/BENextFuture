@@ -20,4 +20,6 @@ class PostGroup extends Model
     ];
     const APPROVED = 1;
     const PENDING = 0;
+    const ANONYMOUS = 1;
+    const NORMAL = 0;
 }

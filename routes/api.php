@@ -140,7 +140,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::group(['prefix' => '/post'], function () {
             Route::post('/create', [PostGroupController::class, 'store']);
-            Route::post('/data', [PostGroupController::class, 'data']);                                 // lấy danh sách bài cần duyệt
+            Route::post('/data', [PostGroupController::class, 'data']);                                 // lấy danh sách đã duyệt
             Route::post('/data-approve', [PostGroupController::class, 'dataApprove']);                  // lấy danh sách bài cần duyệt
             Route::post('/approve', [PostGroupController::class, 'approve']);                           // duyệt bài
             Route::post('/approve-select', [PostGroupController::class, 'approveSelect']);              // duyệt bài được chọn

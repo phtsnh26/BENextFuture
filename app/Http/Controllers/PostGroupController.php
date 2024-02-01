@@ -6,6 +6,7 @@ use App\Models\CommentGroup;
 use App\Models\Group;
 use App\Models\PostGroup;
 use App\Models\PostGroupLike;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -76,8 +77,11 @@ class PostGroupController extends Controller
         $listPost = PostGroup::leftJoin('clients', 'clients.id', 'post_groups.id_client')
             ->where('id_group', $request->id)
             ->where('post_groups.status', PostGroup::PENDING)
-            ->orderByDESC('post_groups.created_at')
-            ->select('post_groups.*', 'clients.fullname', 'clients.username', 'clients.avatar')
+            ->orderByDesc('post_groups.created_at')
+            ->selectRaw('post_groups.*,
+                     CASE WHEN post_groups.privacy = ? THEN "Anonymous member" ELSE clients.fullname END as fullname,
+                     CASE WHEN post_groups.privacy = ? THEN "Anonymous member" ELSE clients.username END as username,
+                     clients.avatar', [PostGroup::ANONYMOUS, PostGroup::ANONYMOUS])
             ->get();
         return response()->json([
             'listPost'    => $listPost,
@@ -87,7 +91,7 @@ class PostGroupController extends Controller
     {
         $listPost = PostGroup::leftJoin('clients', 'clients.id', 'post_groups.id_client')
             ->where('post_groups.status', PostGroup::APPROVED)
-            ->orderByDESC('post_groups.created_at')
+            ->orderByDESC('post_groups.updated_at')
             ->where('id_group', $request->id)
             ->select('post_groups.*', 'clients.fullname', 'clients.username', 'clients.avatar')
             ->get();
@@ -112,6 +116,7 @@ class PostGroupController extends Controller
         $curentGroup = PostGroup::find($request->id);
         if ($curentGroup) {
             $curentGroup->status = PostGroup::APPROVED;
+            $curentGroup->time_approve = Carbon::now();
             $curentGroup->save();
             return response()->json([
                 'status'    => 1,
