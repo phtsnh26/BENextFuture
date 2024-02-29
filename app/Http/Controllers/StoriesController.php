@@ -63,7 +63,7 @@ class StoriesController extends Controller
         ]);
     }
     public function getAllStory(Request $request)
-    {          
+    {
         $now = Carbon::now();
         $client = $request->user();
         $id_client = $client->id;
@@ -103,7 +103,7 @@ class StoriesController extends Controller
                                 });
                         });
                 })
-                ->orderBy('stories.created_at', 'desc')
+                ->orderBy('stories.created_at')
                 ->where('id_client', $value['id_client'])
                 ->get();
             $result[$key]['dataStory'] = $allStoryOfClient;
@@ -136,8 +136,6 @@ class StoriesController extends Controller
             ]);
         }
     }
-
-
     public function detailStory(Request $request, $id)
     {
         $data = Stories::find($id);
